@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">appML</string>
+    <string name="ministerio_louvor_iec">Ministério de Louvor - IEC</string>
+    <string name="home">Home</string>
+    <string name="menu_toggle">Alternar Menu</string>
+    <string name="escalas">Escalas</string>
+    <string name="desc_escalas">Ícone de lista de tarefas para Escalas</string>
+    <string name="membros">Membros</string>
+    <string name="desc_membros">Ícone de grupo de pessoas para Membros</string>
+    <string name="musicas">Músicas</string>
+    <string name="desc_musicas">Ícone de nota musical para Músicas</string>
+    <string name="funcoes">Funções</string>
+    <string name="desc_funcoes">Ícone de gráfico de barras para Funções</string>
+    <string name="ministerios">Ministérios</string>
+    <string name="desc_ministerios">Ícone de pódio com pessoas para Ministérios</string>
+    <string name="relatorios">Relatórios</string>
+    <string name="desc_relatorios">Ícone de gráfico de análise para Relatórios</string>
+    <string name="igreja_do_evangelho_de_cristo">Igreja do Evangelho de Cristo</string>
+    <string name="desenvolvido_por_samuel_oliveira">® Desenvolvido por Samuel Oliveira</string>
+    <string name="version_1_1_2">Versão v1.1.2</string>
+    <string name="desc_facebook">Ícone do Facebook</string>
+    <string name="desc_instagram">Ícone do Instagram</string>
 </resources>
