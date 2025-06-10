@@ -5,101 +5,153 @@ import com.google.gson.annotations.SerializedName;
 public class EscalaDetalhada {
 
     private int id;
-
-    @SerializedName("nome")
+    private String data;
+    private String hora;
     private String nome;
 
-    @SerializedName("data")
-    private String data;
-
-    @SerializedName("ministerio")
-    private String ministerio;
-
-    @SerializedName("hora")
-    private String hora;
-
-    @SerializedName("baterista")
     private String baterista;
-
-    @SerializedName("baixista")
     private String baixista;
-
-    @SerializedName("saxofonista")
-    private String saxofonista;
-
-    @SerializedName("tecladista")
     private String tecladista;
-
-    @SerializedName("vocalistas")
-    private String vocalistas;
-
-    @SerializedName("violonista")
+    private String vocalista;  // Singular, conforme JSON
     private String violonista;
-
-    @SerializedName("guitarrista")
     private String guitarrista;
+    private String outros;
 
-    @SerializedName("tem_musica_associada")
-    private boolean temMusicaAssociada;
+    private String obs;
 
-    @SerializedName("observacoes")
-    private String observacoes;
+    @SerializedName("created_at")
+    private String createdAt;
 
-    // Getters para todos
+    @SerializedName("updated_at")
+    private String updatedAt;
+
+    private String url;
+
+    // Getters e Setters
 
     public int getId() {
         return id;
     }
 
-    public String getNome() {
-        return nome;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getData() {
         return data;
     }
 
-    public String getMinisterio() {
-        return ministerio;
+    public void setData(String data) {
+        this.data = data;
     }
 
     public String getHora() {
         return hora;
     }
 
+    public void setHora(String hora) {
+        this.hora = hora;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
     public String getBaterista() {
         return baterista;
+    }
+
+    public void setBaterista(String baterista) {
+        this.baterista = baterista;
     }
 
     public String getBaixista() {
         return baixista;
     }
 
-    public String getSaxofonista() {
-        return saxofonista;
+    public void setBaixista(String baixista) {
+        this.baixista = baixista;
     }
 
     public String getTecladista() {
         return tecladista;
     }
 
-    public String getVocalistas() {
-        return vocalistas;
+    public void setTecladista(String tecladista) {
+        this.tecladista = tecladista;
+    }
+
+    public String getVocalista() {
+        return vocalista;
+    }
+
+    public void setVocalista(String vocalista) {
+        this.vocalista = vocalista;
     }
 
     public String getViolonista() {
         return violonista;
     }
 
+    public void setViolonista(String violonista) {
+        this.violonista = violonista;
+    }
+
     public String getGuitarrista() {
         return guitarrista;
     }
 
-    public boolean isTemMusicaAssociada() {
-        return temMusicaAssociada;
+    public void setGuitarrista(String guitarrista) {
+        this.guitarrista = guitarrista;
     }
 
-    public String getObservacoes() {
-        return observacoes;
+    public String getOutros() {
+        return outros;
+    }
+
+    public void setOutros(String outros) {
+        this.outros = outros;
+    }
+
+    public String getObs() {
+        return obs;
+    }
+
+    public void setObs(String obs) {
+        this.obs = obs;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    // Método auxiliar para verificar se há música associada (exemplo)
+    public boolean isTemMusicaAssociada() {
+        // Como no JSON não tem campo música, ajuste conforme sua regra
+        return false;
     }
 }

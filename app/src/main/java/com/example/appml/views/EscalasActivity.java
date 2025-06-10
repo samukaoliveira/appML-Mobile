@@ -39,7 +39,7 @@ public class EscalasActivity extends AppCompatActivity implements EscalasAdapter
     }
 
     private void carregarEscalas() {
-        ApiService apiService = RetrofitInstance.getRetrofitInstance().create(ApiService.class);
+        ApiService apiService = RetrofitInstance.getRetrofitInstance(this).create(ApiService.class);
         Call<List<EscalaSimples>> call = apiService.getListaEscalas();
 
         call.enqueue(new Callback<List<EscalaSimples>>() {

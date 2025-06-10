@@ -18,35 +18,35 @@ import retrofit2.Response;
 
 public class EscalaDetalheActivity extends AppCompatActivity {
 
-    private TextView tvNome, tvData, tvMinisterio, tvHora;
-    private TextView tvBaterista, tvBaixista, tvSaxofonista, tvTecladista;
-    private TextView tvVocalistas, tvViolonista, tvGuitarrista, tvMusica;
-    private TextView tvObservacoes, tvFuncaoUsuario;
+    private TextView tvNome, tvData, tvHora;
+    private TextView tvBaterista, tvBaixista, tvTecladista;
+    private TextView tvVocalistas, tvViolonista, tvGuitarrista;
+    private TextView tvObservacoes, tvFuncaoUsuario, tvMusica;
 
-    private int userId = 123; // Exemplo: id do usuário logado, pode pegar do SharedPreferences
+    // Exemplo: id do usuário logado (deve pegar do SharedPreferences ou outra forma real)
+    private int userId = 35;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escala_detalhe);
 
+        // Referência aos TextViews no layout (confirme os IDs no seu XML)
         tvNome = findViewById(R.id.tv_nome);
         tvData = findViewById(R.id.tv_data);
-        tvMinisterio = findViewById(R.id.tv_ministerio);
         tvHora = findViewById(R.id.tv_hora);
 
         tvBaterista = findViewById(R.id.tv_baterista);
-        tvBaixista = findViewById(R.id.tv_baxista);
-        tvSaxofonista = findViewById(R.id.tv_saxofonista);
+        tvBaixista = findViewById(R.id.tv_baixista);
         tvTecladista = findViewById(R.id.tv_tecladista);
 
         tvVocalistas = findViewById(R.id.tv_vocalistas);
         tvViolonista = findViewById(R.id.tv_violonista);
         tvGuitarrista = findViewById(R.id.tv_guitarrista);
-        tvMusica = findViewById(R.id.tv_musica);
 
         tvObservacoes = findViewById(R.id.tv_observacoes);
         tvFuncaoUsuario = findViewById(R.id.tv_funcao_usuario);
+        tvMusica = findViewById(R.id.tv_musica);
 
         int escalaId = getIntent().getIntExtra("escala_id", -1);
         if (escalaId == -1) {
@@ -59,7 +59,7 @@ public class EscalaDetalheActivity extends AppCompatActivity {
     }
 
     private void carregarDetalheEscala(int id) {
-        ApiService apiService = RetrofitInstance.getRetrofitInstance().create(ApiService.class);
+        ApiService apiService = RetrofitInstance.getRetrofitInstance(this).create(ApiService.class);
         Call<EscalaDetalhada> call = apiService.getDetalheEscala(id);
 
         call.enqueue(new Callback<EscalaDetalhada>() {
@@ -70,27 +70,27 @@ public class EscalaDetalheActivity extends AppCompatActivity {
 
                     tvNome.setText(escala.getNome());
                     tvData.setText(escala.getData());
-                    tvMinisterio.setText(escala.getMinisterio());
                     tvHora.setText(escala.getHora());
 
-                    tvBaterista.setText("Baterista: " + escala.getBaterista());
-                    tvBaixista.setText("Baixista: " + escala.getBaixista());
-                    tvSaxofonista.setText("Saxofonista: " + escala.getSaxofonista());
-                    tvTecladista.setText("Tecladista: " + escala.getTecladista());
+                    tvBaterista.setText("Baterista: " + displayValor(escala.getBaterista()));
+                    tvBaixista.setText("Baixista: " + displayValor(escala.getBaixista()));
+                    tvTecladista.setText("Tecladista: " + displayValor(escala.getTecladista()));
 
-                    tvVocalistas.setText("Vocalistas: " + (escala.getVocalistas() != null && !escala.getVocalistas().isEmpty() ? escala.getVocalistas() : "---"));
-                    tvViolonista.setText("Violonista: " + escala.getViolonista());
-                    tvGuitarrista.setText("Guitarrista: " + escala.getGuitarrista());
-
-                    if (escala.isTemMusicaAssociada()) {
-                        tvMusica.setText("Há música associada a esta escala.");
+                    String vocalistas = escala.getVocalista();
+                    if (vocalistas != null && !vocalistas.isEmpty() && !vocalistas.equals("-")) {
+                        tvVocalistas.setText("Vocalistas: " + vocalistas);
                     } else {
-                        tvMusica.setText("Nenhuma música associada a esta escala.");
+                        tvVocalistas.setText("Vocalistas: ---");
                     }
 
-                    tvObservacoes.setText("Obs: " + (escala.getObservacoes() != null ? escala.getObservacoes() : "-"));
+                    tvViolonista.setText("Violonista: " + displayValor(escala.getViolonista()));
+                    tvGuitarrista.setText("Guitarrista: " + displayValor(escala.getGuitarrista()));
 
-                    // Verificar função do usuário nesta escala
+                    // Como não há campo música no JSON, deixamos fixo
+                    tvMusica.setText("Nenhuma música associada a esta escala.");
+
+                    tvObservacoes.setText("Obs: " + (escala.getObs() != null && !escala.getObs().equals("-") ? escala.getObs() : "-"));
+
                     String funcaoUsuario = descobrirFuncaoUsuario(escala, userId);
                     tvFuncaoUsuario.setText("Sua função nesta escala: " + funcaoUsuario);
 
@@ -106,21 +106,22 @@ public class EscalaDetalheActivity extends AppCompatActivity {
         });
     }
 
+    private String displayValor(String valor) {
+        if (valor == null || valor.equals("-") || valor.trim().isEmpty()) {
+            return "---";
+        }
+        return valor;
+    }
+
     private String descobrirFuncaoUsuario(EscalaDetalhada escala, int userId) {
-        // Exemplo: verificar em cada campo se o nome do usuário está atribuído
-        // Para isso, você precisa do nome do usuário logado (aqui vamos supor que seja "Samuel")
-        String nomeUsuario = "Samuel"; // Pega do login real
+        String userIdStr = String.valueOf(userId);
 
-        if (nomeUsuario.equalsIgnoreCase(escala.getBaterista())) return "Baterista";
-        if (nomeUsuario.equalsIgnoreCase(escala.getBaixista())) return "Baixista";
-        if (nomeUsuario.equalsIgnoreCase(escala.getSaxofonista())) return "Saxofonista";
-        if (nomeUsuario.equalsIgnoreCase(escala.getTecladista())) return "Tecladista";
-
-        // Vocalistas podem ser múltiplos (se quiser, pode tratar)
-        if (escala.getVocalistas() != null && escala.getVocalistas().toLowerCase().contains(nomeUsuario.toLowerCase())) return "Vocalista";
-
-        if (nomeUsuario.equalsIgnoreCase(escala.getViolonista())) return "Violonista";
-        if (nomeUsuario.equalsIgnoreCase(escala.getGuitarrista())) return "Guitarrista";
+        if (userIdStr.equals(escala.getBaterista())) return "Baterista";
+        if (userIdStr.equals(escala.getBaixista())) return "Baixista";
+        if (userIdStr.equals(escala.getTecladista())) return "Tecladista";
+        if (userIdStr.equals(escala.getVocalista())) return "Vocalista";
+        if (userIdStr.equals(escala.getViolonista())) return "Violonista";
+        if (userIdStr.equals(escala.getGuitarrista())) return "Guitarrista";
 
         return "Nenhuma função atribuída";
     }

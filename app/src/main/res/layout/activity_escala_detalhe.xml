@@ -47,7 +47,7 @@
             android:layout_marginBottom="12dp"/>
 
         <TextView android:id="@+id/tv_baterista" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <TextView android:id="@+id/tv_baxista" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <TextView android:id="@+id/tv_baixista" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
         <TextView android:id="@+id/tv_saxofonista" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
         <TextView android:id="@+id/tv_tecladista" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 

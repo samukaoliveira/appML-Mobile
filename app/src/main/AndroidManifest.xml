@@ -25,6 +25,7 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".views.EscalasActivity" />
+        <activity android:name=".views.EscalaDetalheActivity" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

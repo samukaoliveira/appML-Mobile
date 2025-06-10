@@ -1,6 +1,7 @@
 package com.example.appml;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -40,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
         flashMessage = findViewById(R.id.flashMessage);
 
-        apiService = RetrofitInstance.getRetrofitInstance().create(ApiService.class);
+        apiService = RetrofitInstance.getRetrofitInstance(this).create(ApiService.class);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,10 +65,14 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null) {
                             String token = response.body().getToken();
 
+                            SharedPreferences sharedPref = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putString("auth_token", token);
+                            editor.apply(); // ou editor.commit();
+
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
-
-                            // TODO: salvar token, navegar para próxima tela, etc.
+                            finish();
 
                         } else {
                             Toast.makeText(LoginActivity.this, "Erro: " + response.message(), Toast.LENGTH_SHORT).show();
