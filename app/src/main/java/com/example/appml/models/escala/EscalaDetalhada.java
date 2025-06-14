@@ -1,6 +1,9 @@
 package com.example.appml.models.escala;
 
+import com.example.appml.models.musica.Musica;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class EscalaDetalhada {
 
@@ -16,6 +19,9 @@ public class EscalaDetalhada {
     private String violonista;
     private String guitarrista;
     private String outros;
+
+    @SerializedName("escalas_musicas")
+    private List<Musica> musicas;
 
     private String obs;
 
@@ -147,6 +153,10 @@ public class EscalaDetalhada {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public List<Musica> getMusicas() {
+        return musicas;
     }
 
     // Método auxiliar para verificar se há música associada (exemplo)

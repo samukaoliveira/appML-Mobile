@@ -1,6 +1,9 @@
 package com.example.appml.models.escala;
 
+import com.example.appml.models.musica.Musica;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class Escala {
 
@@ -27,6 +30,10 @@ public class Escala {
 
     @SerializedName("guitarrista")
     private String guitarrista;
+
+
+    @SerializedName("musicas")
+    private List<Musica> musicas;
 
     @SerializedName("tem_musica_associada")
     private boolean temMusicaAssociada;
@@ -114,5 +121,12 @@ public class Escala {
 
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
+    }
+
+
+    // getters e setters...
+
+    public List<Musica> getMusicas() {
+        return musicas;
     }
 }

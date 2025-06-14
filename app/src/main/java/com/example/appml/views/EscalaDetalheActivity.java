@@ -1,17 +1,29 @@
 package com.example.appml.views;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appml.R;
 import com.example.appml.models.escala.EscalaDetalhada;
+import com.example.appml.models.musica.Musica;
 import com.example.appml.services.ApiService;
 import com.example.appml.services.RetrofitInstance;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,32 +33,46 @@ public class EscalaDetalheActivity extends AppCompatActivity {
     private TextView tvNome, tvData, tvHora;
     private TextView tvBaterista, tvBaixista, tvTecladista;
     private TextView tvVocalistas, tvViolonista, tvGuitarrista;
-    private TextView tvObservacoes, tvFuncaoUsuario, tvMusica;
+    private TextView tvObservacoes;
+
+    private RecyclerView rvMusicas;
+    private TextView tvMusicasVazia;
+
+    private MusicaAdapter musicaAdapter;
 
     // Exemplo: id do usuário logado (deve pegar do SharedPreferences ou outra forma real)
     private int userId = 35;
 
+    @SuppressLint({"MissingInflatedId", "WrongViewCast"})
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escala_detalhe);
 
-        // Referência aos TextViews no layout (confirme os IDs no seu XML)
-        tvNome = findViewById(R.id.tv_nome);
-        tvData = findViewById(R.id.tv_data);
-        tvHora = findViewById(R.id.tv_hora);
+        // Referências dos TextViews no layout (confirme os IDs no seu XML)
+        tvNome = findViewById(R.id.tvNome);
+        tvData = findViewById(R.id.tvData);
+        tvHora = findViewById(R.id.tvHora);
 
-        tvBaterista = findViewById(R.id.tv_baterista);
-        tvBaixista = findViewById(R.id.tv_baixista);
-        tvTecladista = findViewById(R.id.tv_tecladista);
+        tvBaterista = findViewById(R.id.tvBaterista);
+        tvBaixista = findViewById(R.id.tvBaixista);
+        tvTecladista = findViewById(R.id.tvTecladista);
 
-        tvVocalistas = findViewById(R.id.tv_vocalistas);
-        tvViolonista = findViewById(R.id.tv_violonista);
-        tvGuitarrista = findViewById(R.id.tv_guitarrista);
+        tvVocalistas = findViewById(R.id.tvVocalistas);
+        tvViolonista = findViewById(R.id.tvViolonista);
+        tvGuitarrista = findViewById(R.id.tvGuitarrista);
 
-        tvObservacoes = findViewById(R.id.tv_observacoes);
-        tvFuncaoUsuario = findViewById(R.id.tv_funcao_usuario);
-        tvMusica = findViewById(R.id.tv_musica);
+        tvObservacoes = findViewById(R.id.tvObservacoes);
+
+        // RecyclerView e TextView para mensagem de vazio
+        rvMusicas = findViewById(R.id.rvMusicas);
+        tvMusicasVazia = findViewById(R.id.tvMusicasVazia);
+
+        // Configura RecyclerView
+        musicaAdapter = new MusicaAdapter(new ArrayList<>());
+        rvMusicas.setLayoutManager(new LinearLayoutManager(this));
+        rvMusicas.setAdapter(musicaAdapter);
+
 
         int escalaId = getIntent().getIntExtra("escala_id", -1);
         if (escalaId == -1) {
@@ -68,6 +94,14 @@ public class EscalaDetalheActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     EscalaDetalhada escala = response.body();
 
+                    Gson gson = new Gson();
+                    Log.d("TESTE_JSON", gson.toJson(response.body()));
+
+                    // 1.  Logue o JSON bruto que chega (via interceptor)
+                    HttpLoggingInterceptor log = new HttpLoggingInterceptor(message -> Log.d("RAW_JSON", message));
+                    log.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+
                     tvNome.setText(escala.getNome());
                     tvData.setText(escala.getData());
                     tvHora.setText(escala.getHora());
@@ -86,13 +120,26 @@ public class EscalaDetalheActivity extends AppCompatActivity {
                     tvViolonista.setText("Violonista: " + displayValor(escala.getViolonista()));
                     tvGuitarrista.setText("Guitarrista: " + displayValor(escala.getGuitarrista()));
 
-                    // Como não há campo música no JSON, deixamos fixo
-                    tvMusica.setText("Nenhuma música associada a esta escala.");
+                    // Atualiza lista de músicas no adapter
+                    List<Musica> musicas = escala.getMusicas();
+
+                    if (musicas == null || musicas.isEmpty()) {
+                        tvMusicasVazia.setVisibility(View.VISIBLE);
+                        rvMusicas.setVisibility(View.GONE);
+                    } else {
+                        tvMusicasVazia.setVisibility(View.GONE);
+                        rvMusicas.setVisibility(View.VISIBLE);
+
+                        musicaAdapter.setMusicas(musicas);  // Atualiza dados no adapter
+
+                        for (Musica musica : escala.getMusicas()) {
+                            Log.d("API_TESTE", "🎵 Título: " + musica.getTitulo() +
+                                    ", Versão: " + musica.getNomeVersao() +
+                                    ", Link: " + musica.getLinkYoutube());
+                        }
+                    }
 
                     tvObservacoes.setText("Obs: " + (escala.getObs() != null && !escala.getObs().equals("-") ? escala.getObs() : "-"));
-
-                    String funcaoUsuario = descobrirFuncaoUsuario(escala, userId);
-                    tvFuncaoUsuario.setText("Sua função nesta escala: " + funcaoUsuario);
 
                 } else {
                     Toast.makeText(EscalaDetalheActivity.this, "Falha ao carregar detalhes", Toast.LENGTH_SHORT).show();
@@ -111,18 +158,5 @@ public class EscalaDetalheActivity extends AppCompatActivity {
             return "---";
         }
         return valor;
-    }
-
-    private String descobrirFuncaoUsuario(EscalaDetalhada escala, int userId) {
-        String userIdStr = String.valueOf(userId);
-
-        if (userIdStr.equals(escala.getBaterista())) return "Baterista";
-        if (userIdStr.equals(escala.getBaixista())) return "Baixista";
-        if (userIdStr.equals(escala.getTecladista())) return "Tecladista";
-        if (userIdStr.equals(escala.getVocalista())) return "Vocalista";
-        if (userIdStr.equals(escala.getViolonista())) return "Violonista";
-        if (userIdStr.equals(escala.getGuitarrista())) return "Guitarrista";
-
-        return "Nenhuma função atribuída";
     }
 }
