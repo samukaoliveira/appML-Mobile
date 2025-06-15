@@ -15,7 +15,8 @@ public class EscalaDetalhada {
     private String baterista;
     private String baixista;
     private String tecladista;
-    private String vocalista;  // Singular, conforme JSON
+    @SerializedName("vocalistas")
+    private List<String> vocalistas;  // Singular, conforme JSON
     private String violonista;
     private String guitarrista;
     private String outros;
@@ -91,12 +92,12 @@ public class EscalaDetalhada {
         this.tecladista = tecladista;
     }
 
-    public String getVocalista() {
-        return vocalista;
+    public List<String> getVocalistas() {
+        return vocalistas;
     }
 
     public void setVocalista(String vocalista) {
-        this.vocalista = vocalista;
+        this.vocalistas.add(vocalista);
     }
 
     public String getViolonista() {

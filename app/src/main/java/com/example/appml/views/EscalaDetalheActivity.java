@@ -2,6 +2,7 @@ package com.example.appml.views;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -110,9 +111,10 @@ public class EscalaDetalheActivity extends AppCompatActivity {
                     tvBaixista.setText("Baixista: " + displayValor(escala.getBaixista()));
                     tvTecladista.setText("Tecladista: " + displayValor(escala.getTecladista()));
 
-                    String vocalistas = escala.getVocalista();
+                    List<String> vocalistas = escala.getVocalistas();
                     if (vocalistas != null && !vocalistas.isEmpty() && !vocalistas.equals("-")) {
-                        tvVocalistas.setText("Vocalistas: " + vocalistas);
+                        String nomes = TextUtils.join(", ", vocalistas);
+                        tvVocalistas.setText("Vocalistas: " + nomes);
                     } else {
                         tvVocalistas.setText("Vocalistas: ---");
                     }

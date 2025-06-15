@@ -12,6 +12,8 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:drawableStart="@drawable/ic_youtube"
+        android:drawablePadding="6dp"
         android:id="@+id/tvMusicaLink"
         android:autoLink="web"
         android:textColor="@android:color/holo_red_dark"
