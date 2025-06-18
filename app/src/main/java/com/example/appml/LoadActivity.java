@@ -1,6 +1,7 @@
 package com.example.appml;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,9 +33,18 @@ public class LoadActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(LoadActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();;
+//                Intent intent = new Intent(LoadActivity.this, LoginActivity.class);
+//                startActivity(intent);
+//                finish();;
+                SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                String token = prefs.getString("auth_token", null);
+
+                if (token != null && !token.isEmpty()) {
+                    startActivity(new Intent(LoadActivity.this, MainActivity.class));
+                } else {
+                    startActivity(new Intent(LoadActivity.this, LoginActivity.class));
+                }
+                finish();
             }
         }, 2000);
 
