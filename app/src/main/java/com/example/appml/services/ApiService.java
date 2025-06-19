@@ -4,6 +4,7 @@ import com.example.appml.models.escala.Escala;
 import com.example.appml.models.LoginResponse;
 import com.example.appml.models.UsuarioLoginRequest;
 import com.example.appml.models.escala.EscalaDetalhada;
+import com.example.appml.models.escala.EscalaNotificacao;
 import com.example.appml.models.escala.EscalaSimples;
 
 import java.util.List;
@@ -24,4 +25,7 @@ public interface ApiService {
 
     @GET("escalas/{id}")
     Call<EscalaDetalhada> getDetalheEscala(@Path("id") int id);
+
+    @GET("atualizadas")
+    Call<List<EscalaNotificacao>> getAtualizadas();
 }
