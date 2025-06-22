@@ -23,9 +23,15 @@ public interface ApiService {
     @GET("escalas/")
     Call<List<EscalaSimples>> getListaEscalas();
 
+    @GET("minhas_escalas/")
+    Call<List<EscalaSimples>> getMinhasEscalas();
+
     @GET("escalas/{id}")
     Call<EscalaDetalhada> getDetalheEscala(@Path("id") int id);
 
     @GET("atualizadas")
     Call<List<EscalaNotificacao>> getAtualizadas();
+
+    @GET("recentes")
+    Call<List<EscalaNotificacao>> getRecentes();
 }

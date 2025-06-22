@@ -25,6 +25,7 @@ import com.example.appml.views.EscalaDetalheActivity;
 import java.io.IOException;
 import java.util.List;
 
+import retrofit2.Call;
 import retrofit2.Response;
 
 public class EscalaPollWorker extends Worker {
@@ -51,14 +52,30 @@ public class EscalaPollWorker extends Worker {
 
     @NonNull
     @Override
-    public Result doWork() {
+    public Result doWork(){
 
         ApiService api = RetrofitInstance
                 .getRetrofitInstance(getApplicationContext())
                 .create(ApiService.class);
 
+        Result atualizadasResult = doWorkBuilder("Escala atualizada", api.getAtualizadas());
+
+        Result novasResult = doWorkBuilder("Nova Escala Cadastrada", api.getRecentes());
+
+        if (atualizadasResult == Result.failure() || novasResult == Result.failure()) {
+            return Result.failure();
+        }
+
+        return Result.success();
+    }
+
+
+    public Result doWorkBuilder(String titulo, Call<List<EscalaNotificacao>> call) {
+
+
+
         try {
-            Response<List<EscalaNotificacao>> resp = api.getAtualizadas().execute();
+            Response<List<EscalaNotificacao>> resp = call.execute();
             List<EscalaNotificacao> escalas = resp.body();      // pode vir null
             if (escalas == null || escalas.isEmpty()) {
                 return Result.success();
@@ -91,7 +108,7 @@ public class EscalaPollWorker extends Worker {
                 NotificationCompat.Builder nb =
                         new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                                 .setSmallIcon(R.drawable.notificacao)  // crie esse ícone em mipmap
-                                .setContentTitle("Escala atualizada")
+                                .setContentTitle(titulo)
                                 .setContentText("Toque para ver a escala do dia " + escala.getData())
                                 .setContentIntent(pending)
                                 .setAutoCancel(true);

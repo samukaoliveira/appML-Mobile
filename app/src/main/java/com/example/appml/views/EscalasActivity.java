@@ -3,6 +3,7 @@ package com.example.appml.views;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -25,7 +26,7 @@ import retrofit2.Response;
 public class EscalasActivity extends AppCompatActivity implements EscalasAdapter.OnEscalaClickListener {
 
     private RecyclerView recyclerView;
-    private EscalasAdapter adapter;
+    private Button minhasEscalas;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,30 +36,25 @@ public class EscalasActivity extends AppCompatActivity implements EscalasAdapter
         recyclerView = findViewById(R.id.recycler_escalas);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        carregarEscalas();
-    }
+        minhasEscalas = findViewById(R.id.minhas_escalas);
 
-    private void carregarEscalas() {
-        ApiService apiService = RetrofitInstance.getRetrofitInstance(this).create(ApiService.class);
-        Call<List<EscalaSimples>> call = apiService.getListaEscalas();
-
-        call.enqueue(new Callback<List<EscalaSimples>>() {
+        minhasEscalas.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onResponse(Call<List<EscalaSimples>> call, Response<List<EscalaSimples>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<EscalaSimples> escalas = response.body();
-                    adapter = new EscalasAdapter(escalas, EscalasActivity.this);
-                    recyclerView.setAdapter(adapter);
-                } else {
-                    Toast.makeText(EscalasActivity.this, "Falha ao carregar escalas", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<EscalaSimples>> call, Throwable t) {
-                Toast.makeText(EscalasActivity.this, "Erro: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onClick(View v) {
+                Intent intent = new Intent(EscalasActivity.this, MinhasEscalasActivity.class);
+                startActivity(intent);
             }
         });
+
+        ApiService api = RetrofitInstance.getRetrofitInstance(this)
+                .create(ApiService.class);
+
+        new CarregaEscalas().carregar(
+                this,
+                recyclerView,
+                api.getListaEscalas(),
+                this
+        );
     }
 
     @Override

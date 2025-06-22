@@ -26,6 +26,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".views.EscalasActivity" />
         <activity android:name=".views.EscalaDetalheActivity" />
+        <activity android:name=".views.MinhasEscalasActivity" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
