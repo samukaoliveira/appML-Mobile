@@ -1,10 +1,12 @@
 package com.example.appml.views;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,10 +15,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appml.MainActivity;
 import com.example.appml.R;
 import com.example.appml.models.escala.EscalaDetalhada;
 import com.example.appml.models.musica.Musica;
 import com.example.appml.services.ApiService;
+import com.example.appml.services.HomeService;
 import com.example.appml.services.RetrofitInstance;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -41,14 +45,16 @@ public class EscalaDetalheActivity extends AppCompatActivity {
 
     private MusicaAdapter musicaAdapter;
 
-    // Exemplo: id do usuário logado (deve pegar do SharedPreferences ou outra forma real)
-    private int userId = 35;
+    ImageButton btnHome;
 
     @SuppressLint({"MissingInflatedId", "WrongViewCast"})
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escala_detalhe);
+
+        btnHome = findViewById(R.id.btnHome);
+        HomeService.VoltaPraHome(btnHome, this);
 
         // Referências dos TextViews no layout (confirme os IDs no seu XML)
         tvNome = findViewById(R.id.tvNome);

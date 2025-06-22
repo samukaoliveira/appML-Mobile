@@ -22,11 +22,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".views.EscalasActivity" />
-        <activity android:name=".views.EscalaDetalheActivity" />
-        <activity android:name=".views.MinhasEscalasActivity" />
+        <activity android:name=".LoginActivity" android:screenOrientation="sensorPortrait"/>
+        <activity android:name=".MainActivity" android:screenOrientation="sensorPortrait"/>
+        <activity android:name=".views.EscalasActivity" android:screenOrientation="sensorPortrait"/>
+        <activity android:name=".views.EscalaDetalheActivity" android:screenOrientation="sensorPortrait"/>
+        <activity android:name=".views.MinhasEscalasActivity" android:screenOrientation="sensorPortrait"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
