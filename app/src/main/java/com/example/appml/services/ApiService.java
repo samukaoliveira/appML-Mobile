@@ -6,6 +6,8 @@ import com.example.appml.models.UsuarioLoginRequest;
 import com.example.appml.models.escala.EscalaDetalhada;
 import com.example.appml.models.escala.EscalaNotificacao;
 import com.example.appml.models.escala.EscalaSimples;
+import com.example.appml.models.musica.Musica;
+import com.example.appml.models.musica.MusicaDetalhada;
 
 import java.util.List;
 
@@ -25,6 +27,12 @@ public interface ApiService {
 
     @GET("minhas_escalas/")
     Call<List<EscalaSimples>> getMinhasEscalas();
+
+    @GET("musicas/")
+    Call<List<Musica>> getMusicas();
+
+    @GET("musicas/{id}")
+    Call<MusicaDetalhada> getDetalheMusica(@Path("id") int id);
 
     @GET("escalas/{id}")
     Call<EscalaDetalhada> getDetalheEscala(@Path("id") int id);

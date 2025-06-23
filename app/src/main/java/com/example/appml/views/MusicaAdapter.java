@@ -34,7 +34,7 @@ public class MusicaAdapter extends RecyclerView.Adapter<MusicaAdapter.MusicaView
 
         public MusicaViewHolder(View itemView) {
             super(itemView);
-            tvTitulo = itemView.findViewById(R.id.tvMusicaTitulo);
+            tvTitulo = itemView.findViewById(R.id.tvNome);
             tvLink = itemView.findViewById(R.id.tvMusicaLink);
             tvVersao = itemView.findViewById(R.id.tvMusicaVersao);
         }
@@ -50,7 +50,7 @@ public class MusicaAdapter extends RecyclerView.Adapter<MusicaAdapter.MusicaView
     @Override
     public void onBindViewHolder(MusicaViewHolder holder, int position) {
         Musica musica = musicas.get(position);
-        holder.tvTitulo.setText((position + 1) + "ª " + musica.getTitulo());
+        holder.tvTitulo.setText((position + 1) + "ª " + musica.getNome());
         holder.tvLink.setText(musica.getLinkYoutube());
         holder.tvVersao.setText(musica.getNomeVersao());
     }

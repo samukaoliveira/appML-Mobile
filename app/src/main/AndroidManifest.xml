@@ -27,6 +27,8 @@
         <activity android:name=".views.EscalasActivity" android:screenOrientation="sensorPortrait"/>
         <activity android:name=".views.EscalaDetalheActivity" android:screenOrientation="sensorPortrait"/>
         <activity android:name=".views.MinhasEscalasActivity" android:screenOrientation="sensorPortrait"/>
+        <activity android:name=".views.MusicasActivity" android:screenOrientation="sensorPortrait"/>
+        <activity android:name=".views.MusicaDetalheActivity" android:screenOrientation="sensorPortrait"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

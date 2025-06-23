@@ -37,7 +37,7 @@ public class EscalaDetalheActivity extends AppCompatActivity {
 
     private TextView tvNome, tvData, tvHora;
     private TextView tvBaterista, tvBaixista, tvTecladista;
-    private TextView tvVocalistas, tvViolonista, tvGuitarrista;
+    private TextView tvVocalistas, tvViolonista, tvGuitarrista, tvSaxofonista;
     private TextView tvObservacoes;
 
     private RecyclerView rvMusicas;
@@ -68,6 +68,7 @@ public class EscalaDetalheActivity extends AppCompatActivity {
         tvVocalistas = findViewById(R.id.tvVocalistas);
         tvViolonista = findViewById(R.id.tvViolonista);
         tvGuitarrista = findViewById(R.id.tvGuitarrista);
+        tvSaxofonista = findViewById(R.id.tvSaxofonista);
 
         tvObservacoes = findViewById(R.id.tvObservacoes);
 
@@ -127,6 +128,7 @@ public class EscalaDetalheActivity extends AppCompatActivity {
 
                     tvViolonista.setText("Violonista: " + displayValor(escala.getViolonista()));
                     tvGuitarrista.setText("Guitarrista: " + displayValor(escala.getGuitarrista()));
+                    tvSaxofonista.setText("Saxofonista: " + displayValor(escala.getSaxofonista()));
 
                     // Atualiza lista de músicas no adapter
                     List<Musica> musicas = escala.getMusicas();

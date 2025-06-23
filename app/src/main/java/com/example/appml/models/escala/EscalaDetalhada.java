@@ -19,6 +19,8 @@ public class EscalaDetalhada {
     private List<String> vocalistas;  // Singular, conforme JSON
     private String violonista;
     private String guitarrista;
+
+    private String saxofonista;
     private String outros;
 
     @SerializedName("escalas_musicas")
@@ -164,5 +166,9 @@ public class EscalaDetalhada {
     public boolean isTemMusicaAssociada() {
         // Como no JSON não tem campo música, ajuste conforme sua regra
         return false;
+    }
+
+    public String getSaxofonista() {
+        return saxofonista;
     }
 }

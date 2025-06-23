@@ -3,6 +3,14 @@ package com.example.appml.models.musica;
 public class Musica {
     private int id;
     private String titulo;
+
+    public String getNome() {
+        return nome;
+    }
+
+    private String nome;
+
+    private String interprete;
     private Versao versao;
 
     // Getters e setters
@@ -24,5 +32,9 @@ public class Musica {
     public String getNomeVersao() {
         if (versao != null) return versao.getNome();
         return "";
+    }
+
+    public String getInterprete() {
+        return interprete;
     }
 }
