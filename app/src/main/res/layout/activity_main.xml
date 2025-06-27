@@ -126,7 +126,7 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginTop="8dp"
-                        android:src="@drawable/profile"
+                        android:src="@drawable/profile_gray"
                         android:contentDescription="@string/desc_membros" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -199,7 +199,7 @@
                         android:layout_height="100dp"
                         android:layout_marginTop="8dp"
                         android:contentDescription="@string/desc_funcoes"
-                        android:src="@drawable/skills" />
+                        android:src="@drawable/skills_gray" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -234,7 +234,7 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginTop="8dp"
-                        android:src="@drawable/ministerio"
+                        android:src="@drawable/ministerio_gray"
                         android:contentDescription="@string/desc_ministerios" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -270,7 +270,7 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginTop="8dp"
-                        android:src="@drawable/analysis"
+                        android:src="@drawable/analysis_gray"
                         android:contentDescription="@string/desc_relatorios" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
