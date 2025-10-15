@@ -16,7 +16,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <ScrollView android:id="@+id/scroll_content"
+    <ScrollView
+        android:id="@+id/scroll_content"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
@@ -36,90 +37,45 @@
             android:padding="12dp"
             tools:ignore="ExtraText">
 
+            <!-- Informações da escala -->
             <TextView
                 android:id="@+id/tvData"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/EscalaItemStyle"
                 android:text="Escala - 15/06/2025"
                 android:textSize="20sp"
-                android:gravity="center"
                 android:textStyle="bold"
-                android:paddingBottom="16dp" />
+                android:gravity="center"
+                android:paddingBottom="16dp"/>
 
-            <!-- Nome -->
             <TextView
                 android:id="@+id/tvNome"
                 style="@style/EscalaItemStyle"
-                android:text="Nome: Culto de Departamentos" />
+                android:text="Nome: Culto de Departamentos"/>
 
-            <!-- Ministério -->
             <TextView
                 android:id="@+id/tvMinisterio"
                 style="@style/EscalaItemStyle"
                 android:drawableStart="@drawable/ic_ministerio"
                 android:drawablePadding="6dp"
-                android:text="Ministério: ML de teste" />
+                android:text="Ministério: ML de teste"/>
 
-            <!-- Hora -->
             <TextView
                 android:id="@+id/tvHora"
                 style="@style/EscalaItemStyle"
                 android:drawableStart="@drawable/ic_clock"
                 android:drawablePadding="6dp"
-                android:text="Hora: 19:00" />
+                android:text="Hora: 19:00"/>
 
             <!-- Músicos -->
-            <TextView
-                android:id="@+id/tvBaterista"
-                style="@style/EscalaItemStyle"
-                android:drawableStart="@drawable/ic_drum_set"
-                android:drawablePadding="6dp"
-                android:text="Baterista: Samuel" />
+            <TextView android:id="@+id/tvBaterista" style="@style/EscalaItemStyle" android:drawableStart="@drawable/ic_drum_set" android:drawablePadding="6dp" android:text="Baterista: Samuel"/>
+            <TextView android:id="@+id/tvBaixista" style="@style/EscalaItemStyle" android:drawableStart="@drawable/ic_bass_guitar" android:drawablePadding="6dp" android:text="Baixista: ---"/>
+            <TextView android:id="@+id/tvSaxofonista" style="@style/EscalaItemStyle" android:drawableStart="@drawable/ic_sax" android:drawablePadding="6dp" android:text="Saxofonista: ---"/>
+            <TextView android:id="@+id/tvTecladista" style="@style/EscalaItemStyle" android:drawableStart="@drawable/ic_synthesizer" android:drawablePadding="6dp" android:text="Tecladista: ---"/>
+            <TextView android:id="@+id/tvVocalistas" style="@style/EscalaItemStyle" android:drawableStart="@drawable/ic_microphone" android:drawablePadding="6dp" android:text="Vocalistas: ---"/>
+            <TextView android:id="@+id/tvViolonista" style="@style/EscalaItemStyle" android:drawableStart="@drawable/ic_guitar" android:drawablePadding="6dp" android:text="Violonista: Marcelo"/>
+            <TextView android:id="@+id/tvGuitarrista" style="@style/EscalaItemStyle" android:drawableStart="@drawable/ic_eletric_guitar" android:drawablePadding="6dp" android:text="Guitarrista: Cid"/>
 
-            <TextView
-                android:id="@+id/tvBaixista"
-                style="@style/EscalaItemStyle"
-                android:drawableStart="@drawable/ic_bass_guitar"
-                android:drawablePadding="6dp"
-                android:text="Baixista: ---" />
-
-            <TextView
-                android:id="@+id/tvSaxofonista"
-                style="@style/EscalaItemStyle"
-                android:drawableStart="@drawable/ic_sax"
-                android:drawablePadding="6dp"
-                android:text="Saxofonista: ---" />
-
-            <TextView
-                android:id="@+id/tvTecladista"
-                style="@style/EscalaItemStyle"
-                android:drawableStart="@drawable/ic_synthesizer"
-                android:drawablePadding="6dp"
-                android:text="Tecladista: ---" />
-
-            <TextView
-                android:id="@+id/tvVocalistas"
-                style="@style/EscalaItemStyle"
-                android:drawableStart="@drawable/ic_microphone"
-                android:drawablePadding="6dp"
-                android:text="Vocalistas: ---" />
-
-            <TextView
-                android:id="@+id/tvViolonista"
-                style="@style/EscalaItemStyle"
-                android:drawableStart="@drawable/ic_guitar"
-                android:drawablePadding="6dp"
-                android:text="Violonista: Marcelo" />
-
-            <TextView
-                android:id="@+id/tvGuitarrista"
-                style="@style/EscalaItemStyle"
-                android:drawableStart="@drawable/ic_eletric_guitar"
-                android:drawablePadding="6dp"
-                android:text="Guitarrista: Cid" />
-
-            <!-- Musicas -->
-
+            <!-- Músicas -->
             <TextView
                 android:id="@+id/tvMusicas"
                 android:layout_width="match_parent"
@@ -135,7 +91,47 @@
                 android:id="@+id/rvMusicas"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:nestedScrollingEnabled="false" />  <!-- evita conflito de rolagem -->
+                android:nestedScrollingEnabled="false"/>
+
+            <ProgressBar
+                android:id="@+id/progressLoading"
+                style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginTop="16dp"/>
+
+            <!-- Player: SeekBar e tempo -->
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:layout_marginTop="16dp"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/tvCurrentTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="0:00"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/tvTotalTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0:00"
+                    android:textSize="14sp"/>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvMusicasVazia"
@@ -144,15 +140,7 @@
                 android:text="Nenhuma música associada a esta escala."
                 android:textSize="16sp"
                 android:gravity="center"
-                android:visibility="gone" />
-
-            <!-- Outros -->
-            <TextView
-                android:id="@+id/tvOutros"
-                style="@style/EscalaItemStyle"
-                android:drawableStart="@drawable/ic_other"
-                android:drawablePadding="6dp"
-                android:text="Outros: -" />
+                android:visibility="gone"/>
 
             <!-- Observações -->
             <TextView
@@ -160,7 +148,7 @@
                 style="@style/EscalaItemStyle"
                 android:drawableStart="@drawable/ic_observe"
                 android:drawablePadding="6dp"
-                android:text="Obs: -" />
+                android:text="Obs: -"/>
 
             <!-- Botões -->
             <LinearLayout
@@ -177,7 +165,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="#FBC02D"
                     android:textColor="@android:color/white"
-                    android:layout_margin="4dp" />
+                    android:layout_margin="4dp"/>
 
                 <Button
                     android:id="@+id/btnDeletar"
@@ -186,7 +174,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="#D32F2F"
                     android:textColor="@android:color/white"
-                    android:layout_margin="4dp" />
+                    android:layout_margin="4dp"/>
 
                 <Button
                     android:id="@+id/btnVoltar"
@@ -195,7 +183,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="#616161"
                     android:textColor="@android:color/white"
-                    android:layout_margin="4dp" />
+                    android:layout_margin="4dp"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -208,6 +196,5 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

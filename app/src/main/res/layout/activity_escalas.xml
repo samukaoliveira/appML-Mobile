@@ -20,7 +20,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_escalas"
         android:layout_width="407dp"
-        android:layout_height="646dp"
+        android:layout_height="700dp"
         android:clipToPadding="false"
         android:padding="8dp"
         android:scrollbars="vertical"
@@ -36,7 +36,7 @@
     <Button
         android:id="@+id/todas_as_escalas_disable"
         android:layout_width="180dp"
-        android:layout_height="49dp"
+        android:layout_height="60dp"
         android:layout_marginStart="16dp"
         android:text="Todas as Escalas"
         android:textAlignment="center"
@@ -44,6 +44,7 @@
         app:flow_horizontalAlign="center"
         app:flow_verticalAlign="center"
         android:elevation="4dp"
+        android:layout_marginTop="75dp"
         app:layout_constraintBottom_toTopOf="@+id/recycler_escalas"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -52,7 +53,7 @@
     <Button
         android:id="@+id/minhas_escalas"
         android:layout_width="180dp"
-        android:layout_height="49dp"
+        android:layout_height="60dp"
         android:text="Minhas Escalas"
         android:backgroundTint="@color/silver"
         android:textAlignment="center"
@@ -60,6 +61,7 @@
         app:flow_horizontalAlign="center"
         app:flow_verticalAlign="center"
         android:elevation="4dp"
+        android:layout_marginTop="75dp"
         app:layout_constraintBottom_toTopOf="@+id/recycler_escalas"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.937"

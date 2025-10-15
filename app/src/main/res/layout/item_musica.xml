@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- Nome da música -->
     <TextView
         android:id="@+id/tvNome"
         android:textStyle="bold"
@@ -11,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <!-- Link do YouTube (só aparece se não houver áudio) -->
     <TextView
         android:drawableStart="@drawable/ic_youtube"
         android:drawablePadding="6dp"
@@ -18,8 +20,36 @@
         android:autoLink="web"
         android:textColor="@android:color/holo_red_dark"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
+    <!-- Player de áudio (só aparece se houver áudio) -->
+    <LinearLayout
+        android:id="@+id/layoutPlayer"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/btnPlay"
+            android:src="@android:drawable/ic_media_play"
+            android:contentDescription="Play"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <ImageButton
+            android:id="@+id/btnPause"
+            android:src="@android:drawable/ic_media_pause"
+            android:contentDescription="Pause"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+    </LinearLayout>
+
+    <!-- Nome da versão -->
     <TextView
         android:id="@+id/tvMusicaVersao"
         android:layout_width="wrap_content"

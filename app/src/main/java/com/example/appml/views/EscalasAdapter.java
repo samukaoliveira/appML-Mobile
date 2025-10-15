@@ -1,11 +1,14 @@
 package com.example.appml.views;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appml.R;
@@ -39,7 +42,18 @@ public class EscalasAdapter extends RecyclerView.Adapter<EscalasAdapter.EscalaVi
         EscalaSimples escala = escalas.get(position);
 
         holder.nome.setText(escala.getNome());
-        holder.dataMinisterio.setText(escala.getData() + " - " + escala.getMinisterio());
+        holder.dataMinisterio.setText(escala.getData() + " - " +
+               escala.getHora() + " - " + escala.getMinisterio());
+
+        Context context = holder.itemView.getContext();
+
+        if (escala.semFuncao()) {
+            holder.funcao.setTextColor(ContextCompat.getColor(context, R.color.black));
+        } else {
+            holder.funcao.setTextColor(ContextCompat.getColor(context, R.color.red));
+        }
+
+        holder.funcao.setText(escala.getFuncao());
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
@@ -54,12 +68,13 @@ public class EscalasAdapter extends RecyclerView.Adapter<EscalasAdapter.EscalaVi
     }
 
     public static class EscalaViewHolder extends RecyclerView.ViewHolder {
-        TextView nome, dataMinisterio;
+        TextView nome, dataMinisterio, funcao, semFuncao;
 
         public EscalaViewHolder(@NonNull View itemView) {
             super(itemView);
             nome = itemView.findViewById(R.id.nome_escala);
             dataMinisterio = itemView.findViewById(R.id.data_ministerio);
+            funcao = itemView.findViewById(R.id.funcao);
         }
     }
 }

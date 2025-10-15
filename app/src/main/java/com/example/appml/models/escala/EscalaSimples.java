@@ -12,7 +12,13 @@ public class EscalaSimples {
     @SerializedName("data")
     private String data;
 
-    @SerializedName("ministerio")
+    @SerializedName("hora")
+    private String hora;
+
+    @SerializedName("funcao")
+    private String funcao;
+
+    @SerializedName("ministerio_nome")
     private String ministerio;
 
     public int getId() {
@@ -23,6 +29,10 @@ public class EscalaSimples {
         return nome;
     }
 
+    public String getHora() {
+        return hora;
+    }
+
     public String getData() {
         return data;
     }
@@ -30,4 +40,16 @@ public class EscalaSimples {
     public String getMinisterio() {
         return ministerio;
     }
+
+    public String getFuncao() {
+        return funcao;
+    }
+
+    public boolean semFuncao(){
+        if (this.funcao.contains("Não está nesta escala")){
+            return true;
+        }
+        return false;
+    }
+
 }

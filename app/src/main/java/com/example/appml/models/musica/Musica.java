@@ -13,6 +13,8 @@ public class Musica {
     private String interprete;
     private Versao versao;
 
+    private String path;
+
     // Getters e setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -29,6 +31,11 @@ public class Musica {
         return "";
     }
 
+    public String getArquivoAudio() {
+        if (versao != null) return versao.getArquivoAudio();
+        return "";
+    }
+
     public String getNomeVersao() {
         if (versao != null) return versao.getNome();
         return "";
@@ -36,5 +43,9 @@ public class Musica {
 
     public String getInterprete() {
         return interprete;
+    }
+
+    public String getPath() {
+        return path;
     }
 }

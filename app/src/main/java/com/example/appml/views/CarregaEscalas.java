@@ -2,6 +2,7 @@
 package com.example.appml.views;
 
 import android.app.Activity;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +40,10 @@ public class CarregaEscalas {
             @Override
             public void onResponse(Call<List<EscalaSimples>> call,
                                    Response<List<EscalaSimples>> response) {
+
+                Log.d("API_DEBUG", "HTTP CODE: " + response.code());
+                Log.d("API_DEBUG", "BODY: " + response.body());
+                Log.d("API_DEBUG", "ERROR BODY: " + response.errorBody());
 
                 if (response.isSuccessful() && response.body() != null) {
                     List<EscalaSimples> escalas = response.body();
