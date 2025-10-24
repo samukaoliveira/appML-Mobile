@@ -204,7 +204,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/card_ministerios"
+                android:id="@+id/card_mensalidades"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="8dp"
@@ -225,7 +225,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/ministerios"
+                        android:text="@string/mensalidades"
                         android:textColor="@android:color/black"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -234,8 +234,8 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginTop="8dp"
-                        android:src="@drawable/ministerio_gray"
-                        android:contentDescription="@string/desc_ministerios" />
+                        android:src="@drawable/cifrao"
+                        android:contentDescription="@string/desc_mensalidades" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -247,7 +247,7 @@
                 app:cardElevation="4dp"
                 android:layout_margin="8dp"
                 app:layout_constraintWidth_percent="0.45"
-                app:layout_constraintStart_toEndOf="@id/card_ministerios"
+                app:layout_constraintStart_toEndOf="@id/card_mensalidades"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/card_funcoes">
 

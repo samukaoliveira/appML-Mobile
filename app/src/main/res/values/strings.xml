@@ -11,13 +11,13 @@
     <string name="desc_musicas">Ícone de nota musical para Músicas</string>
     <string name="funcoes">Funções</string>
     <string name="desc_funcoes">Ícone de gráfico de barras para Funções</string>
-    <string name="ministerios">Ministérios</string>
-    <string name="desc_ministerios">Ícone de pódio com pessoas para Ministérios</string>
+    <string name="mensalidades">Mensalidades</string>
+    <string name="desc_mensalidades">Ícone com cifrão para Mensalidades</string>
     <string name="relatorios">Relatórios</string>
     <string name="desc_relatorios">Ícone de gráfico de análise para Relatórios</string>
     <string name="igreja_do_evangelho_de_cristo">Igreja do Evangelho de Cristo</string>
     <string name="desenvolvido_por_samuel_oliveira">® Desenvolvido por Samuel Oliveira</string>
-    <string name="version">Versão v1.4.0</string>
+    <string name="version">Versão v1.5.0</string>
     <string name="desc_facebook">Ícone do Facebook</string>
     <string name="desc_instagram">Ícone do Instagram</string>
 </resources>

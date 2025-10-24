@@ -14,12 +14,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.appml.views.EscalasActivity;
+import com.example.appml.views.MensalidadeActivity;
 import com.example.appml.views.MusicasActivity;
 import com.example.appml.worker.WorkScheduler;
 
 public class MainActivity extends AppCompatActivity {
 
-    CardView cardEscalas, cardMusicas;
+    CardView cardEscalas, cardMusicas, cardMensalidades;
 
     ImageView btnHome;
 
@@ -64,6 +65,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, MusicasActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        cardMensalidades = findViewById(R.id.card_mensalidades);
+
+        cardMensalidades.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MensalidadeActivity.class);
                 startActivity(intent);
             }
         });
