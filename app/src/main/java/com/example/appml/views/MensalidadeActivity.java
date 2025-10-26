@@ -3,6 +3,7 @@ package com.example.appml.views;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.appml.R;
 import com.example.appml.models.mensalidade.Mensalidade;
 import com.example.appml.services.ApiService;
+import com.example.appml.services.HomeService;
 import com.example.appml.services.RetrofitInstance;
 
 import java.util.List;
@@ -24,11 +26,16 @@ public class MensalidadeActivity extends AppCompatActivity {
     private RecyclerView rvMensalidades;
     private ProgressBar progressBar;
     private ApiService apiService;
+    ImageButton btnHome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mensalidades);
+
+        // Botão Home
+        btnHome = findViewById(R.id.btnHome);
+        HomeService.VoltaPraHome(btnHome, this);
 
         rvMensalidades = findViewById(R.id.rvMensalidades);
         progressBar = new ProgressBar(this);

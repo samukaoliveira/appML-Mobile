@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.appml.services.UpdateChecker;
 import com.example.appml.views.EscalasActivity;
 import com.example.appml.views.MensalidadeActivity;
 import com.example.appml.views.MusicasActivity;
@@ -28,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        UpdateChecker checker = new UpdateChecker(this);
+        checker.checkForUpdate();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
