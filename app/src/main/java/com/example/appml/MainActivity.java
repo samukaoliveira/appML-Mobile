@@ -30,11 +30,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        UpdateChecker checker = new UpdateChecker(this);
-        checker.checkForUpdate();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        UpdateChecker checker = new UpdateChecker(this);
+        checker.checkForUpdate();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
