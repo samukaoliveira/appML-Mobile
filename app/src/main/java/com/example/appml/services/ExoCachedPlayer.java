@@ -18,28 +18,22 @@ import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 
 import java.io.File;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * ExoCachedPlayer
- * Player com cache simples e execução segura na main thread.
+ * Player com cache e controle seguro na main thread.
  */
 @UnstableApi
 public class ExoCachedPlayer {
 
     private static ExoCachedPlayer instance;
-
     private final Context context;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
-
     private ExoPlayer player;
     private SimpleCache simpleCache;
     private String currentUrl;
 
-    // Tamanho máximo do cache: 100 MB
-    private static final long MAX_CACHE_SIZE = 100L * 1024L * 1024L;
+    private static final long MAX_CACHE_SIZE = 100L * 1024L * 1024L; // 100 MB
 
     private ExoCachedPlayer(Context context) {
         this.context = context.getApplicationContext();
@@ -50,6 +44,8 @@ public class ExoCachedPlayer {
     public static synchronized ExoCachedPlayer getInstance(Context context) {
         if (instance == null) {
             instance = new ExoCachedPlayer(context);
+        } else if (instance.player == null) {
+            instance.initPlayer();
         }
         return instance;
     }
@@ -91,16 +87,15 @@ public class ExoCachedPlayer {
         }
     }
 
-    /**
-     * Toca uma URL (usa cache por baixo). Garantido para executar na main thread.
-     */
+    /** Toca uma URL (usa cache). */
     public void play(String url) {
         mainHandler.post(() -> {
             try {
                 if (player == null) initPlayer();
 
-                // toggle se for mesma URL
-                if (player != null && player.isPlaying() && currentUrl != null && currentUrl.equals(url)) {
+                if (player == null) return; // segurança
+
+                if (currentUrl != null && currentUrl.equals(url) && player.isPlaying()) {
                     player.pause();
                     return;
                 }
@@ -110,7 +105,9 @@ public class ExoCachedPlayer {
 
                 MediaItem mediaItem = new MediaItem.Builder()
                         .setUri(uri)
-                        .setMediaMetadata(new MediaMetadata.Builder().setTitle(uri.getLastPathSegment()).build())
+                        .setMediaMetadata(new MediaMetadata.Builder()
+                                .setTitle(uri.getLastPathSegment())
+                                .build())
                         .build();
 
                 player.setMediaItem(mediaItem);
@@ -123,9 +120,7 @@ public class ExoCachedPlayer {
         });
     }
 
-    /**
-     * Pausa a reprodução (executa em main thread).
-     */
+    /** Pausa a reprodução */
     public void pause() {
         mainHandler.post(() -> {
             try {
@@ -136,46 +131,21 @@ public class ExoCachedPlayer {
         });
     }
 
-    /**
-     * Para o player (executa em main thread).
-     */
+    /** Para a reprodução */
     public void stop() {
         mainHandler.post(() -> {
             try {
-                if (player != null) player.stop();
+                if (player != null) {
+                    player.stop();
+                    player.clearMediaItems();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
     }
 
-    /**
-     * Retorna se está tocando — comportamento síncrono seguro mesmo fora da main thread.
-     */
-    public boolean isPlaying() {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            return player != null && player.isPlaying();
-        } else {
-            final AtomicBoolean result = new AtomicBoolean(false);
-            final CountDownLatch latch = new CountDownLatch(1);
-            mainHandler.post(() -> {
-                try {
-                    result.set(player != null && player.isPlaying());
-                } finally {
-                    latch.countDown();
-                }
-            });
-            try {
-                // espera até 300ms — evita travar indefinidamente
-                latch.await(300, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException ignored) {}
-            return result.get();
-        }
-    }
-
-    /**
-     * Libera player e cache (executa na main thread).
-     */
+    /** Libera recursos */
     public void release() {
         mainHandler.post(() -> {
             try {
@@ -195,10 +165,16 @@ public class ExoCachedPlayer {
         });
     }
 
-    /**
-     * Retorna o ExoPlayer (pode ser null). Tenha cuidado — acessar o player deve ser feito na thread principal.
-     */
+    /** Retorna o player (pode ser null) */
     public ExoPlayer getPlayer() {
+        if (player == null) {
+            initPlayer();
+        }
         return player;
+    }
+
+    /** Retorna se está tocando */
+    public boolean isPlaying() {
+        return player != null && player.isPlaying();
     }
 }

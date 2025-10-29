@@ -1,0 +1,27 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background da barra (cinza claro) -->
+    <item android:id="@android:id/background">
+        <shape>
+            <corners android:radius="2dp" />
+            <solid android:color="#CCCCCC" />
+        </shape>
+    </item>
+
+    <!-- Secondary progress (cache, cinza escuro) -->
+    <item android:id="@android:id/secondaryProgress">
+        <shape>
+            <corners android:radius="2dp" />
+            <solid android:color="#888888" />
+        </shape>
+    </item>
+
+    <!-- Progress (o que já tocou, vermelho) -->
+    <item android:id="@android:id/progress">
+        <shape>
+            <corners android:radius="2dp" />
+            <solid android:color="#FF0000" />
+        </shape>
+    </item>
+
+</layer-list>

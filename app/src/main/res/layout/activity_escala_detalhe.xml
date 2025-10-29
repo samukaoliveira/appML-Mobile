@@ -107,8 +107,17 @@
                 android:id="@+id/seekBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:max="100"
-                android:layout_marginTop="16dp"/>
+                android:progress="0"
+                android:thumb="@drawable/seekbar_thumb"
+                android:progressTint="@color/red"
+                android:thumbTint="@color/red"
+                android:splitTrack="false" />
+
+
+
 
             <TextView
                 android:id="@+id/tvPercentual"

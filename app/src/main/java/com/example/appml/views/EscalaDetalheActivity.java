@@ -65,8 +65,8 @@ public class EscalaDetalheActivity extends AppCompatActivity implements MusicaAd
                     seekBar.setProgress(progress);
                     tvCurrentTime.setText(formatTime((int) pos));
                 }
+                handler.postDelayed(this, 500);
             }
-            handler.postDelayed(this, 1000);
         }
     };
 
@@ -86,6 +86,8 @@ public class EscalaDetalheActivity extends AppCompatActivity implements MusicaAd
             finish();
             return;
         }
+
+        prepararParaNovaEscala();
         carregarDetalheEscala(escalaId);
     }
 
@@ -136,25 +138,19 @@ public class EscalaDetalheActivity extends AppCompatActivity implements MusicaAd
             public void onPlaybackStateChanged(int state) {
                 switch (state) {
                     case Player.STATE_BUFFERING:
-                        runOnUiThread(() -> {
-                            progressLoading.setVisibility(View.VISIBLE);
-                            tvPercentual.setText("Carregando...");
-                        });
+                        progressLoading.setVisibility(View.VISIBLE);
+                        tvPercentual.setText("Carregando...");
                         break;
                     case Player.STATE_READY:
-                        runOnUiThread(() -> {
-                            progressLoading.setVisibility(View.GONE);
-                            if (exoPlayer.getPlayer() != null) {
-                                long dur = exoPlayer.getPlayer().getDuration();
-                                tvTotalTime.setText(formatTime((int) dur));
-                            }
-                        });
+                        progressLoading.setVisibility(View.GONE);
+                        if (exoPlayer.getPlayer() != null) {
+                            long dur = exoPlayer.getPlayer().getDuration();
+                            tvTotalTime.setText(formatTime((int) dur));
+                        }
                         break;
                     case Player.STATE_ENDED:
-                        runOnUiThread(() -> {
-                            seekBar.setProgress(0);
-                            tvCurrentTime.setText("00:00");
-                        });
+                        seekBar.setProgress(0);
+                        tvCurrentTime.setText("00:00");
                         break;
                 }
             }
@@ -167,16 +163,23 @@ public class EscalaDetalheActivity extends AppCompatActivity implements MusicaAd
                     handler.removeCallbacks(updateSeekRunnable);
                 }
             }
-
-            @Override
-            public void onPlaybackSuppressionReasonChanged(int reason) {
-                if (reason == Player.PLAYBACK_SUPPRESSION_REASON_TRANSIENT_AUDIO_FOCUS_LOSS) {
-                    Toast.makeText(EscalaDetalheActivity.this, "Áudio pausado", Toast.LENGTH_SHORT).show();
-                }
-            }
         };
 
-        exoPlayer.getPlayer().addListener(playerListener);
+        if (exoPlayer.getPlayer() != null) {
+            exoPlayer.getPlayer().addListener(playerListener);
+        }
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && exoPlayer.getPlayer() != null) {
+                    long dur = exoPlayer.getPlayer().getDuration();
+                    long newPos = (dur * progress) / 100;
+                    exoPlayer.getPlayer().seekTo(newPos);
+                }
+            }
+            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
     }
 
     private void carregarDetalheEscala(int id) {
@@ -255,7 +258,19 @@ public class EscalaDetalheActivity extends AppCompatActivity implements MusicaAd
         handler.removeCallbacks(updateSeekRunnable);
         if (exoPlayer != null && exoPlayer.getPlayer() != null) {
             exoPlayer.getPlayer().removeListener(playerListener);
-            exoPlayer.release();
+            // opcional: não liberar cache para manter singleton ativo
         }
+    }
+
+    private void prepararParaNovaEscala() {
+        if (exoPlayer != null) {
+            exoPlayer.stop();
+        }
+
+        seekBar.setProgress(0);
+        tvCurrentTime.setText("00:00");
+        tvTotalTime.setText("00:00");
+        tvPercentual.setText("");
+        progressLoading.setVisibility(View.GONE);
     }
 }
