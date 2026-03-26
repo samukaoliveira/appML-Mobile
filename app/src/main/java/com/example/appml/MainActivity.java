@@ -19,7 +19,7 @@ import com.example.appml.views.MensalidadeActivity;
 import com.example.appml.views.MusicasActivity;
 import com.example.appml.worker.WorkScheduler;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     CardView cardEscalas, cardMusicas, cardMensalidades;
 

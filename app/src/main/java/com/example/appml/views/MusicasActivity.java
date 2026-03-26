@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appml.BaseActivity;
 import com.example.appml.R;
 import com.example.appml.models.musica.Musica;
 import com.example.appml.models.musica.MusicaDetalhada;
@@ -18,7 +19,7 @@ import com.example.appml.services.ApiService;
 import com.example.appml.services.HomeService;
 import com.example.appml.services.RetrofitInstance;
 
-public class MusicasActivity extends AppCompatActivity implements MusicasAdapter.OnMusicaClickListener {
+public class MusicasActivity extends BaseActivity implements MusicasAdapter.OnMusicaClickListener {
 
     private RecyclerView recyclerView;
 

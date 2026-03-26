@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appml.BaseActivity;
 import com.example.appml.R;
 import com.example.appml.models.mensalidade.Mensalidade;
 import com.example.appml.services.ApiService;
@@ -21,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MensalidadeActivity extends AppCompatActivity {
+public class MensalidadeActivity extends BaseActivity {
 
     private RecyclerView rvMensalidades;
     private ProgressBar progressBar;

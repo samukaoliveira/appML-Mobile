@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appml.BaseActivity;
 import com.example.appml.MainActivity;
 import com.example.appml.R;
 import com.example.appml.services.ApiService;
@@ -19,7 +20,7 @@ import com.example.appml.views.CarregaEscalas;
 import com.example.appml.views.EscalaDetalheActivity;
 import com.example.appml.views.EscalasAdapter;
 
-public class MinhasEscalasActivity extends AppCompatActivity
+public class MinhasEscalasActivity extends BaseActivity
         implements EscalasAdapter.OnEscalaClickListener {
 
     private RecyclerView recyclerView;

@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appml.BaseActivity;
 import com.example.appml.R;
 import com.example.appml.models.escala.EscalaDetalhada;
 import com.example.appml.models.musica.Musica;
@@ -32,7 +33,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MusicaDetalheActivity extends AppCompatActivity {
+public class MusicaDetalheActivity extends BaseActivity {
 
     private TextView tvNome, tvInterprete, tvTomOriginal, tvUltimoTomTocado;
     private TextView tvBpmOriginal;

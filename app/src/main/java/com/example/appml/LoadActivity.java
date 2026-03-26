@@ -22,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LoadActivity extends AppCompatActivity {
+public class LoadActivity extends BaseActivity {
 
 
     @Override

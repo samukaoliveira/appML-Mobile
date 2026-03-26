@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appml.BaseActivity;
 import com.example.appml.R;
 import com.example.appml.models.escala.EscalaSimples;
 import com.example.appml.services.HomeService;
@@ -25,7 +26,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class EscalasActivity extends AppCompatActivity implements EscalasAdapter.OnEscalaClickListener {
+public class EscalasActivity extends BaseActivity implements EscalasAdapter.OnEscalaClickListener {
 
     private RecyclerView recyclerView;
     private Button minhasEscalas;

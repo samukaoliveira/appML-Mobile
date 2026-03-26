@@ -17,6 +17,7 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appml.BaseActivity;
 import com.example.appml.R;
 import com.example.appml.models.escala.EscalaDetalhada;
 import com.example.appml.models.musica.Musica;
@@ -33,7 +34,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 @UnstableApi
-public class EscalaDetalheActivity extends AppCompatActivity implements MusicaAdapter.OnMusicaPlayListener {
+public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter.OnMusicaPlayListener {
 
     private TextView tvNome, tvData, tvHora;
     private TextView tvBaterista, tvBaixista, tvTecladista;

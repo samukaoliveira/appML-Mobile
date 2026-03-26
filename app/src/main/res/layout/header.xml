@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="#007BFF">
+    android:background="@drawable/bg_gradient"
+    android:paddingTop="36dp">
 
     <ImageButton
         android:id="@+id/btnHome"
