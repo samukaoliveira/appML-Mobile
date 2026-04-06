@@ -1,7 +1,10 @@
 package com.example.appml.services;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+
+import com.example.appml.LoginActivity;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -37,7 +40,17 @@ public class RetrofitInstance {
                             }
 
                             Request request = requestBuilder.build();
-                            return chain.proceed(request);
+                            Response response = chain.proceed(request);
+
+                            if (response.code() == 401) {
+                                // limpa token
+                                sharedPref.edit().remove("auth_token").apply();
+
+                                // redireciona para login
+                                redirectToLogin(context);
+                            }
+
+                            return response;
                         }
                     })
                     .build();
@@ -50,5 +63,13 @@ public class RetrofitInstance {
         }
 
         return retrofit;
+    }
+
+    private static void redirectToLogin(Context context) {
+        new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+            Intent intent = new Intent(context, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            context.startActivity(intent);
+        });
     }
 }

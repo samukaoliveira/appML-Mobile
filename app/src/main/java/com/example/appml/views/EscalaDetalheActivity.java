@@ -2,7 +2,6 @@ package com.example.appml.views;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,7 +36,11 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
     private TextView tvNome, tvData, tvHora;
     private TextView tvBaterista, tvBaixista, tvTecladista;
-    private TextView tvVocalistas, tvViolonista, tvGuitarrista, tvSaxofonista;
+
+    // ✅ NOVOS VOCAIS
+    private TextView tvVocalista1, tvVocalista2, tvVocalista3, tvVocalista4;
+
+    private TextView tvViolonista, tvGuitarrista, tvSaxofonista;
     private TextView tvObservacoes;
     private RecyclerView rvMusicas;
     private TextView tvMusicasVazia;
@@ -101,7 +103,12 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         tvBaixista = findViewById(R.id.tvBaixista);
         tvTecladista = findViewById(R.id.tvTecladista);
 
-        tvVocalistas = findViewById(R.id.tvVocalistas);
+        // ✅ NOVOS VOCAIS
+        tvVocalista1 = findViewById(R.id.tvVocalista1);
+        tvVocalista2 = findViewById(R.id.tvVocalista2);
+        tvVocalista3 = findViewById(R.id.tvVocalista3);
+        tvVocalista4 = findViewById(R.id.tvVocalista4);
+
         tvViolonista = findViewById(R.id.tvViolonista);
         tvGuitarrista = findViewById(R.id.tvGuitarrista);
         tvSaxofonista = findViewById(R.id.tvSaxofonista);
@@ -199,8 +206,13 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
                     tvBaixista.setText("Baixista: " + displayValor(escala.getBaixista()));
                     tvTecladista.setText("Tecladista: " + displayValor(escala.getTecladista()));
 
+                    // ✅ VOCAIS SEPARADOS
                     List<String> vocalistas = escala.getVocalistas();
-                    tvVocalistas.setText("Vocalistas: " + (vocalistas != null && !vocalistas.isEmpty() ? TextUtils.join(", ", vocalistas) : "---"));
+
+                    tvVocalista1.setText(getVocal(vocalistas, 0));
+                    tvVocalista2.setText(getVocal(vocalistas, 1));
+                    tvVocalista3.setText(getVocal(vocalistas, 2));
+                    tvVocalista4.setText(getVocal(vocalistas, 3));
 
                     tvViolonista.setText("Violonista: " + displayValor(escala.getViolonista()));
                     tvGuitarrista.setText("Guitarrista: " + displayValor(escala.getGuitarrista()));
@@ -228,6 +240,16 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
                 Toast.makeText(EscalaDetalheActivity.this, "Erro: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private String getVocal(List<String> lista, int index) {
+        if (lista != null && lista.size() > index) {
+            String nome = lista.get(index);
+            if (nome != null && !nome.trim().isEmpty()) {
+                return nome;
+            }
+        }
+        return "---";
     }
 
     private String displayValor(String valor) {
@@ -259,7 +281,6 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         handler.removeCallbacks(updateSeekRunnable);
         if (exoPlayer != null && exoPlayer.getPlayer() != null) {
             exoPlayer.getPlayer().removeListener(playerListener);
-            // opcional: não liberar cache para manter singleton ativo
         }
     }
 
