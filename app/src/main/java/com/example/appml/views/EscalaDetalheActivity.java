@@ -1,7 +1,12 @@
 package com.example.appml.views;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -10,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,8 +26,8 @@ import com.example.appml.R;
 import com.example.appml.models.escala.EscalaDetalhada;
 import com.example.appml.models.musica.Musica;
 import com.example.appml.services.ApiService;
-import com.example.appml.services.ExoCachedPlayer;
 import com.example.appml.services.HomeService;
+import com.example.appml.services.MusicService;
 import com.example.appml.services.RetrofitInstance;
 
 import java.util.ArrayList;
@@ -36,42 +42,87 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
     private TextView tvNome, tvData, tvHora;
     private TextView tvBaterista, tvBaixista, tvTecladista;
-
-    // ✅ NOVOS VOCAIS
     private TextView tvVocalista1, tvVocalista2, tvVocalista3, tvVocalista4;
-
     private TextView tvViolonista, tvGuitarrista, tvSaxofonista;
     private TextView tvObservacoes;
+
     private RecyclerView rvMusicas;
     private TextView tvMusicasVazia;
     private MusicaAdapter musicaAdapter;
 
-    private ExoCachedPlayer exoPlayer;
     private SeekBar seekBar;
     private Handler handler = new Handler();
     private TextView tvCurrentTime, tvTotalTime;
     private ProgressBar progressLoading;
-    private TextView tvPercentual;
+
+    private ImageButton btnHome;
+
+    private List<Musica> listaMusicas = new ArrayList<>();
+
+    // 🎧 SERVICE
+    private MusicService musicService;
+    private boolean isBound = false;
+
+    private boolean playerReady = false;
 
     private Player.Listener playerListener;
 
-    ImageButton btnHome;
-
+    // 🔁 Atualiza barra
     private Runnable updateSeekRunnable = new Runnable() {
         @Override
         public void run() {
-            if (exoPlayer != null && exoPlayer.getPlayer() != null && exoPlayer.isPlaying()) {
-                long pos = exoPlayer.getPlayer().getCurrentPosition();
-                long dur = exoPlayer.getPlayer().getDuration();
-                if (dur > 0) {
-                    int progress = (int) ((pos * 100) / dur);
-                    seekBar.setProgress(progress);
-                    tvCurrentTime.setText(formatTime((int) pos));
+            if (musicService != null) {
+                Player player = musicService.getPlayer();
+
+                if (player != null && player.isPlaying()) {
+                    long pos = player.getCurrentPosition();
+                    long dur = player.getDuration();
+
+                    if (dur > 0) {
+                        int progress = (int) ((pos * 100) / dur);
+                        seekBar.setProgress(progress);
+                        tvCurrentTime.setText(formatTime((int) pos));
+                    }
                 }
-                handler.postDelayed(this, 500);
             }
+            handler.postDelayed(this, 500);
         }
     };
+
+    // 🔌 conexão
+    private final ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
+            musicService = binder.getService();
+            isBound = true;
+            playerReady = true;
+
+            configurarPlayer();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Intent intent = new Intent(this, MusicService.class);
+        bindService(intent, connection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (isBound) {
+            unbindService(connection);
+            isBound = false;
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,7 +132,6 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         inicializarComponentes();
         configurarRecyclerView();
         configurarHomeButton();
-        configurarExoPlayer();
 
         int escalaId = getIntent().getIntExtra("escala_id", -1);
         if (escalaId == -1) {
@@ -90,7 +140,6 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
             return;
         }
 
-        prepararParaNovaEscala();
         carregarDetalheEscala(escalaId);
     }
 
@@ -103,7 +152,6 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         tvBaixista = findViewById(R.id.tvBaixista);
         tvTecladista = findViewById(R.id.tvTecladista);
 
-        // ✅ NOVOS VOCAIS
         tvVocalista1 = findViewById(R.id.tvVocalista1);
         tvVocalista2 = findViewById(R.id.tvVocalista2);
         tvVocalista3 = findViewById(R.id.tvVocalista3);
@@ -121,10 +169,8 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         seekBar = findViewById(R.id.seekBar);
         tvCurrentTime = findViewById(R.id.tvCurrentTime);
         tvTotalTime = findViewById(R.id.tvTotalTime);
-        tvPercentual = findViewById(R.id.tvPercentual);
 
         progressLoading = findViewById(R.id.progressLoading);
-        progressLoading.setVisibility(View.GONE);
     }
 
     private void configurarRecyclerView() {
@@ -138,24 +184,22 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         HomeService.VoltaPraHome(btnHome, this);
     }
 
-    private void configurarExoPlayer() {
-        exoPlayer = ExoCachedPlayer.getInstance(this);
-
+    private void configurarPlayer() {
         playerListener = new Player.Listener() {
+
             @Override
             public void onPlaybackStateChanged(int state) {
                 switch (state) {
                     case Player.STATE_BUFFERING:
                         progressLoading.setVisibility(View.VISIBLE);
-                        tvPercentual.setText("Carregando...");
                         break;
+
                     case Player.STATE_READY:
                         progressLoading.setVisibility(View.GONE);
-                        if (exoPlayer.getPlayer() != null) {
-                            long dur = exoPlayer.getPlayer().getDuration();
-                            tvTotalTime.setText(formatTime((int) dur));
-                        }
+                        long dur = musicService.getPlayer().getDuration();
+                        tvTotalTime.setText(formatTime((int) dur));
                         break;
+
                     case Player.STATE_ENDED:
                         seekBar.setProgress(0);
                         tvCurrentTime.setText("00:00");
@@ -173,18 +217,18 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
             }
         };
 
-        if (exoPlayer.getPlayer() != null) {
-            exoPlayer.getPlayer().addListener(playerListener);
-        }
+        musicService.getPlayer().addListener(playerListener);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && exoPlayer.getPlayer() != null) {
-                    long dur = exoPlayer.getPlayer().getDuration();
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    long dur = musicService.getPlayer().getDuration();
                     long newPos = (dur * progress) / 100;
-                    exoPlayer.getPlayer().seekTo(newPos);
+                    musicService.getPlayer().seekTo(newPos);
                 }
             }
+
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
@@ -192,10 +236,12 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
     private void carregarDetalheEscala(int id) {
         ApiService apiService = RetrofitInstance.getRetrofitInstance(this).create(ApiService.class);
+
         apiService.getDetalheEscala(id).enqueue(new Callback<EscalaDetalhada>() {
             @Override
             public void onResponse(Call<EscalaDetalhada> call, Response<EscalaDetalhada> response) {
                 if (response.isSuccessful() && response.body() != null) {
+
                     EscalaDetalhada escala = response.body();
 
                     tvNome.setText(escala.getNome());
@@ -206,7 +252,6 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
                     tvBaixista.setText("Baixista: " + displayValor(escala.getBaixista()));
                     tvTecladista.setText("Tecladista: " + displayValor(escala.getTecladista()));
 
-                    // ✅ VOCAIS SEPARADOS
                     List<String> vocalistas = escala.getVocalistas();
 
                     tvVocalista1.setText(getVocal(vocalistas, 0));
@@ -218,20 +263,21 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
                     tvGuitarrista.setText("Guitarrista: " + displayValor(escala.getGuitarrista()));
                     tvSaxofonista.setText("Saxofonista: " + displayValor(escala.getSaxofonista()));
 
-                    tvObservacoes.setText("Obs: " + (escala.getObs() != null && !escala.getObs().equals("-") ? escala.getObs() : "-"));
+                    tvObservacoes.setText("Obs: " + (escala.getObs() != null ? escala.getObs() : "-"));
 
-                    List<Musica> musicas = escala.getMusicas();
-                    if (musicas == null || musicas.isEmpty()) {
+                    listaMusicas = escala.getMusicas();
+
+                    if (listaMusicas == null || listaMusicas.isEmpty()) {
                         tvMusicasVazia.setVisibility(View.VISIBLE);
                         rvMusicas.setVisibility(View.GONE);
                     } else {
                         tvMusicasVazia.setVisibility(View.GONE);
                         rvMusicas.setVisibility(View.VISIBLE);
-                        musicaAdapter.setMusicas(musicas);
+                        musicaAdapter.setMusicas(listaMusicas);
                     }
 
                 } else {
-                    Toast.makeText(EscalaDetalheActivity.this, "Falha ao carregar detalhes", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EscalaDetalheActivity.this, "Erro ao carregar", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -245,9 +291,7 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
     private String getVocal(List<String> lista, int index) {
         if (lista != null && lista.size() > index) {
             String nome = lista.get(index);
-            if (nome != null && !nome.trim().isEmpty()) {
-                return nome;
-            }
+            if (nome != null && !nome.trim().isEmpty()) return nome;
         }
         return "---";
     }
@@ -258,14 +302,27 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
     @Override
     public void onPlayClicked(Musica musica) {
-        progressLoading.setVisibility(View.VISIBLE);
-        tvPercentual.setText("Carregando...");
-        exoPlayer.play(musica.getArquivoAudio());
+        if (!playerReady) {
+            Toast.makeText(this, "Aguarde o player iniciar...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        List<MediaItem> items = new ArrayList<>();
+
+        for (Musica m : listaMusicas) {
+            items.add(MediaItem.fromUri(m.getArquivoAudio()));
+        }
+
+        int index = listaMusicas.indexOf(musica);
+
+        musicService.playPlaylist(items, index);
     }
 
     @Override
     public void onPauseClicked() {
-        exoPlayer.pause();
+        if (musicService != null) {
+            musicService.pause();
+        }
     }
 
     private String formatTime(int millis) {
@@ -273,26 +330,5 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         int minutes = totalSeconds / 60;
         int seconds = totalSeconds % 60;
         return String.format("%02d:%02d", minutes, seconds);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        handler.removeCallbacks(updateSeekRunnable);
-        if (exoPlayer != null && exoPlayer.getPlayer() != null) {
-            exoPlayer.getPlayer().removeListener(playerListener);
-        }
-    }
-
-    private void prepararParaNovaEscala() {
-        if (exoPlayer != null) {
-            exoPlayer.stop();
-        }
-
-        seekBar.setProgress(0);
-        tvCurrentTime.setText("00:00");
-        tvTotalTime.setText("00:00");
-        tvPercentual.setText("");
-        progressLoading.setVisibility(View.GONE);
     }
 }
