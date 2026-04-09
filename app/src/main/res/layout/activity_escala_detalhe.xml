@@ -62,6 +62,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_ministerio"
+                    android:drawablePadding="8dp"
                     android:textStyle="bold"
                     android:layout_marginBottom="16dp"/>
 
@@ -91,29 +92,41 @@
                         android:textStyle="bold"
                         android:textSize="16sp"/>
 
-                    <TextView android:id="@+id/tvBaterista" style="@style/EscalaItemStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tvBaterista"
+                        style="@style/EscalaItemStyle"
+                        android:drawableStart="@drawable/ic_drum_set"
+                        android:drawablePadding="8dp"/>
 
-                    <TextView android:id="@+id/tvBaixista" style="@style/EscalaItemStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tvBaixista"
+                        style="@style/EscalaItemStyle"
+                        android:drawableStart="@drawable/ic_bass_guitar"
+                        android:drawablePadding="8dp"/>
 
-                    <TextView android:id="@+id/tvGuitarrista" style="@style/EscalaItemStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tvGuitarrista"
+                        style="@style/EscalaItemStyle"
+                        android:drawableStart="@drawable/ic_eletric_guitar"
+                        android:drawablePadding="8dp"/>
 
-                    <TextView android:id="@+id/tvSaxofonista" style="@style/EscalaItemStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tvSaxofonista"
+                        style="@style/EscalaItemStyle"
+                        android:drawableStart="@drawable/ic_sax"
+                        android:drawablePadding="8dp"/>
 
-                    <TextView android:id="@+id/tvTecladista" style="@style/EscalaItemStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tvTecladista"
+                        style="@style/EscalaItemStyle"
+                        android:drawableStart="@drawable/ic_synthesizer"
+                        android:drawablePadding="8dp"/>
 
-                    <TextView android:id="@+id/tvViolonista" style="@style/EscalaItemStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tvViolonista"
+                        style="@style/EscalaItemStyle"
+                        android:drawableStart="@drawable/ic_guitar"
+                        android:drawablePadding="8dp"/>
                 </LinearLayout>
 
                 <!-- VOCAIS -->
@@ -132,21 +145,29 @@
                         android:textStyle="bold"
                         android:textSize="16sp"/>
 
-                    <TextView android:id="@+id/tvVocalista1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tvVocalista1"
+                        style="@style/EscalaItemStyle"
+                        android:drawableStart="@drawable/ic_microphone"
+                        android:drawablePadding="8dp"/>
 
-                    <TextView android:id="@+id/tvVocalista2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tvVocalista2"
+                        style="@style/EscalaItemStyle"
+                        android:drawableStart="@drawable/ic_microphone"
+                        android:drawablePadding="8dp"/>
 
-                    <TextView android:id="@+id/tvVocalista3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tvVocalista3"
+                        style="@style/EscalaItemStyle"
+                        android:drawableStart="@drawable/ic_microphone"
+                        android:drawablePadding="8dp"/>
 
-                    <TextView android:id="@+id/tvVocalista4"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tvVocalista4"
+                        style="@style/EscalaItemStyle"
+                        android:drawableStart="@drawable/ic_microphone"
+                        android:drawablePadding="8dp"/>
                 </LinearLayout>
 
                 <!-- CARD MÚSICAS -->

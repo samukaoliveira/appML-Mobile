@@ -24,4 +24,5 @@
     <color name="red">#FF0000</color>
     <color name="green">#008000</color>
     <color name="dark_gray">#6C757D</color>
+    <color name="green_player">#4CAF50</color>
 </resources>

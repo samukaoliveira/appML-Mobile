@@ -1,31 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="8dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:gravity="center_vertical">
 
-    <!-- Nome da música -->
-    <TextView
-        android:id="@+id/tvNome"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <!-- PLAY / EQUALIZER -->
+    <FrameLayout
+        android:layout_width="40dp"
+        android:layout_height="40dp">
 
-    <!-- Link do YouTube (só aparece se não houver áudio) -->
-    <TextView
-        android:drawableStart="@drawable/ic_youtube"
-        android:drawablePadding="6dp"
-        android:id="@+id/tvMusicaLink"
-        android:autoLink="web"
-        android:textColor="@android:color/holo_red_dark"
-        android:layout_width="wrap_content"
+        <!-- BOTÃO PLAY -->
+        <ImageButton
+            android:id="@+id/btnPlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_media_play"
+            android:contentDescription="Play" />
+
+        <!-- EQUALIZER -->
+        <LinearLayout
+            android:id="@+id/layoutEqualizer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <View
+                android:id="@+id/eqBar1"
+                android:layout_width="4dp"
+                android:layout_height="16dp"
+                android:layout_margin="1dp"
+                android:background="#4CAF50"/>
+
+            <View
+                android:id="@+id/eqBar2"
+                android:layout_width="4dp"
+                android:layout_height="16dp"
+                android:layout_margin="1dp"
+                android:background="#4CAF50"/>
+
+            <View
+                android:id="@+id/eqBar3"
+                android:layout_width="4dp"
+                android:layout_height="16dp"
+                android:layout_margin="1dp"
+                android:background="#4CAF50"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- TEXTO -->
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingStart="12dp">
 
-    <!-- Nome da versão -->
-    <TextView
-        android:id="@+id/tvMusicaVersao"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tvNome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nome música"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tvMusicaVersao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Versão"
+            android:textSize="14sp"
+            android:textColor="#666666"/>
+
+    </LinearLayout>
+
 </LinearLayout>
