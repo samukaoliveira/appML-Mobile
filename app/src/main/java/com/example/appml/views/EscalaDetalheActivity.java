@@ -67,6 +67,12 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
     private Player.Listener playerListener;
 
+    private int currentIndex = -1;
+    private boolean playlistCarregada = false;
+    private ImageButton btnPlayPause;
+    private ImageButton btnNext;
+    private ImageButton btnPrev;
+
     // 🔁 Atualiza barra
     private Runnable updateSeekRunnable = new Runnable() {
         @Override
@@ -171,6 +177,10 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         tvTotalTime = findViewById(R.id.tvTotalTime);
 
         progressLoading = findViewById(R.id.progressLoading);
+
+        btnPlayPause = findViewById(R.id.btnPlayPause);
+        btnNext = findViewById(R.id.btnNext);
+        btnPrev = findViewById(R.id.btnPrev);
     }
 
     private void configurarRecyclerView() {
@@ -209,9 +219,14 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
             @Override
             public void onIsPlayingChanged(boolean isPlaying) {
+
+                ImageButton btnPlayPause = findViewById(R.id.btnPlayPause);
+
                 if (isPlaying) {
+                    btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
                     handler.post(updateSeekRunnable);
                 } else {
+                    btnPlayPause.setImageResource(android.R.drawable.ic_media_play);
                     handler.removeCallbacks(updateSeekRunnable);
                 }
             }
@@ -231,6 +246,46 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        btnPlayPause.setOnClickListener(v -> {
+            if (musicService == null) return;
+
+            // 👉 PRIMEIRA VEZ (nenhuma playlist carregada)
+            if (!playlistCarregada && listaMusicas != null && !listaMusicas.isEmpty()) {
+
+                List<MediaItem> items = new ArrayList<>();
+
+                for (Musica m : listaMusicas) {
+                    items.add(MediaItem.fromUri(m.getArquivoAudio()));
+                }
+
+                musicService.playPlaylist(items, 0); // começa da primeira
+                playlistCarregada = true;
+                currentIndex = 0;
+                return;
+            }
+
+            // 👉 PLAY/PAUSE NORMAL
+            if (musicService.getPlayer().isPlaying()) {
+                musicService.pause();
+            } else {
+                musicService.play();
+            }
+        });
+
+        btnNext.setOnClickListener(v -> {
+            if (musicService != null) {
+                musicService.next();
+                currentIndex++;
+            }
+        });
+
+        btnPrev.setOnClickListener(v -> {
+            if (musicService != null) {
+                musicService.previous();
+                currentIndex--;
+            }
         });
     }
 
@@ -302,27 +357,45 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
     @Override
     public void onPlayClicked(Musica musica) {
-        if (!playerReady) {
-            Toast.makeText(this, "Aguarde o player iniciar...", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
-        List<MediaItem> items = new ArrayList<>();
-
-        for (Musica m : listaMusicas) {
-            items.add(MediaItem.fromUri(m.getArquivoAudio()));
-        }
-
-        int index = listaMusicas.indexOf(musica);
-
-        musicService.playPlaylist(items, index);
-    }
-
-    @Override
-    public void onPauseClicked() {
-        if (musicService != null) {
-            musicService.pause();
-        }
+//        if (!playerReady) {
+//            Toast.makeText(this, "Aguarde o player iniciar...", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        int index = listaMusicas.indexOf(musica);
+//
+//        // 🔥 PRIMEIRA VEZ → carrega playlist
+//        if (!playlistCarregada) {
+//
+//            List<MediaItem> items = new ArrayList<>();
+//
+//            for (Musica m : listaMusicas) {
+//                items.add(MediaItem.fromUri(m.getArquivoAudio()));
+//            }
+//
+//            musicService.playPlaylist(items, index);
+//
+//            playlistCarregada = true;
+//            currentIndex = index;
+//            return;
+//        }
+//
+//        // 🔁 MESMA MÚSICA
+//        if (currentIndex == index) {
+//
+//            if (musicService.getPlayer().isPlaying()) {
+//                musicService.pause();
+//            } else {
+//                musicService.play(); // continua do mesmo ponto
+//            }
+//
+//        } else {
+//            // 🔄 OUTRA MÚSICA
+//            musicService.getPlayer().seekTo(index, 0);
+//            musicService.play();
+//            currentIndex = index;
+//        }
     }
 
     private String formatTime(int millis) {

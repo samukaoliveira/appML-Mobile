@@ -3,8 +3,6 @@ package com.example.appml.views;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,39 +19,29 @@ public class MusicaAdapter extends RecyclerView.Adapter<MusicaAdapter.MusicaView
     private List<Musica> musicas;
     private OnMusicaPlayListener listener;
 
-    // Interface para controlar play/pause na Activity
+    // Interface simplificada (só play agora)
     public interface OnMusicaPlayListener {
         void onPlayClicked(Musica musica);
-        void onPauseClicked();
     }
 
     public MusicaAdapter(List<Musica> musicas, OnMusicaPlayListener listener) {
-        if (musicas != null) {
-            this.musicas = musicas;
-        } else {
-            this.musicas = new ArrayList<>();
-        }
+        this.musicas = (musicas != null) ? musicas : new ArrayList<>();
         this.listener = listener;
     }
 
     public void setMusicas(List<Musica> musicas) {
-        this.musicas = musicas;
+        this.musicas = (musicas != null) ? musicas : new ArrayList<>();
         notifyDataSetChanged();
     }
 
     public static class MusicaViewHolder extends RecyclerView.ViewHolder {
         TextView tvNome, tvVersao, tvLink;
-        LinearLayout layoutPlayer;
-        ImageButton btnPlay, btnPause;
 
         public MusicaViewHolder(View itemView) {
             super(itemView);
             tvNome = itemView.findViewById(R.id.tvNome);
             tvVersao = itemView.findViewById(R.id.tvMusicaVersao);
             tvLink = itemView.findViewById(R.id.tvMusicaLink);
-            layoutPlayer = itemView.findViewById(R.id.layoutPlayer);
-            btnPlay = itemView.findViewById(R.id.btnPlay);
-            btnPause = itemView.findViewById(R.id.btnPause);
         }
     }
 
@@ -75,30 +63,51 @@ public class MusicaAdapter extends RecyclerView.Adapter<MusicaAdapter.MusicaView
         String audioUrl = musica.getArquivoAudio();
         String youtubeLink = musica.getLinkYoutube();
 
-        // Caso tenha áudio
-        if (audioUrl != null && !audioUrl.trim().isEmpty()) {
-            holder.layoutPlayer.setVisibility(View.VISIBLE);
-            holder.tvLink.setVisibility(View.GONE);
+        // 🔥 SEMPRE limpa estado antes (evita bug de reciclagem)
+        holder.tvLink.setVisibility(View.GONE);
+        holder.itemView.setEnabled(true);
 
-            holder.btnPlay.setOnClickListener(v -> listener.onPlayClicked(musica));
-            holder.btnPause.setOnClickListener(v -> listener.onPauseClicked());
+        // 🎧 Se tiver áudio → clicável
+        if (audioUrl != null && !audioUrl.trim().isEmpty()) {
+
+            holder.itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onPlayClicked(musica);
+                }
+            });
+
         }
-        // Caso não tenha áudio mas tenha YouTube
+        // 📺 Se não tiver áudio mas tiver YouTube
         else if (youtubeLink != null && !youtubeLink.trim().isEmpty()) {
-            holder.layoutPlayer.setVisibility(View.GONE);
+
             holder.tvLink.setVisibility(View.VISIBLE);
             holder.tvLink.setText(youtubeLink);
+
+            // opcional: clicar abre também (ou você pode remover)
+            holder.itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onPlayClicked(musica);
+                }
+            });
+
         }
-        // Nenhum dos dois disponível
+        // 🚫 Nada disponível
         else {
-            holder.layoutPlayer.setVisibility(View.GONE);
+
             holder.tvLink.setVisibility(View.VISIBLE);
             holder.tvLink.setText("Sem áudio disponível");
+
+            holder.itemView.setOnClickListener(null);
+            holder.itemView.setEnabled(false);
         }
     }
 
     @Override
     public int getItemCount() {
         return musicas.size();
+    }
+
+    public List<Musica> getMusicas() {
+        return musicas != null ? musicas : new ArrayList<>();
     }
 }
