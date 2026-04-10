@@ -79,6 +79,18 @@
             android:textSize="14sp"
             android:textColor="#666666"/>
 
+        <!-- 🔴 LINK YOUTUBE -->
+        <TextView
+            android:id="@+id/tvMusicaLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="gone"
+            android:textSize="13sp"
+            android:drawableStart="@drawable/ic_youtube"
+            android:drawablePadding="6dp"/>
+
     </LinearLayout>
 
 </LinearLayout>

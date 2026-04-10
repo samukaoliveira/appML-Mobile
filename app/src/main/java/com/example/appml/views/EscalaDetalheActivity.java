@@ -67,7 +67,7 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
     private int currentIndex = -1;
     private boolean playlistCarregada = false;
 
-    // 🔁 Atualiza barra (SAFE)
+    // 🔁 Atualiza barra
     private final Runnable updateSeekRunnable = new Runnable() {
         @Override
         public void run() {
@@ -118,7 +118,6 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
         Intent intent = new Intent(this, MusicService.class);
 
-        // 🔥 MUITO IMPORTANTE (corrige travamento)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent);
         } else {
@@ -215,7 +214,6 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
     private void configurarPlayer() {
 
         Player player = musicService.getPlayer();
-
         if (player == null) return;
 
         player.addListener(new Player.Listener() {
@@ -262,14 +260,17 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
                 List<MediaItem> items = new ArrayList<>();
 
                 for (Musica m : listaMusicas) {
-                    items.add(MediaItem.fromUri(m.getArquivoAudio()));
+                    if (m.getArquivoAudio() != null && !m.getArquivoAudio().isEmpty()) {
+                        items.add(MediaItem.fromUri(m.getArquivoAudio()));
+                    }
                 }
 
-                musicService.playPlaylist(items, 0);
-
-                playlistCarregada = true;
-                currentIndex = 0;
-                musicaAdapter.setCurrentPlayingIndex(0);
+                if (!items.isEmpty()) {
+                    musicService.playPlaylist(items, 0);
+                    playlistCarregada = true;
+                    currentIndex = 0;
+                    musicaAdapter.setCurrentPlayingIndex(0);
+                }
 
                 return;
             }
@@ -346,6 +347,10 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
                         tvMusicasVazia.setVisibility(View.GONE);
                         rvMusicas.setVisibility(View.VISIBLE);
                         musicaAdapter.setMusicas(listaMusicas);
+
+                        if (!existeAlgumAudio()) {
+                            desativarPlayer();
+                        }
                     }
                 }
             }
@@ -357,17 +362,47 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         });
     }
 
+    private boolean existeAlgumAudio() {
+        if (listaMusicas == null) return false;
+
+        for (Musica m : listaMusicas) {
+            if (m.getArquivoAudio() != null && !m.getArquivoAudio().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void desativarPlayer() {
+        btnPlayPause.setEnabled(false);
+        btnNext.setEnabled(false);
+        btnPrev.setEnabled(false);
+        seekBar.setEnabled(false);
+
+        btnPlayPause.setAlpha(0.3f);
+        btnNext.setAlpha(0.3f);
+        btnPrev.setAlpha(0.3f);
+        seekBar.setAlpha(0.3f);
+    }
+
     @Override
     public void onPlayClicked(Musica musica, int position) {
 
         if (!playerReady || musicService == null) return;
+
+        if (musica.getArquivoAudio() == null || musica.getArquivoAudio().isEmpty()) {
+            Toast.makeText(this, "Essa música não possui áudio", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (!playlistCarregada) {
 
             List<MediaItem> items = new ArrayList<>();
 
             for (Musica m : listaMusicas) {
-                items.add(MediaItem.fromUri(m.getArquivoAudio()));
+                if (m.getArquivoAudio() != null && !m.getArquivoAudio().isEmpty()) {
+                    items.add(MediaItem.fromUri(m.getArquivoAudio()));
+                }
             }
 
             musicService.playPlaylist(items, position);

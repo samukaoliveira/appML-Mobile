@@ -62,6 +62,14 @@ public class MusicaAdapter extends RecyclerView.Adapter<MusicaAdapter.MusicaView
         holder.tvNome.setText((position + 1) + "ª " + musica.getNome());
         holder.tvVersao.setText(musica.getNomeVersao());
 
+        // 🔥 MOSTRAR LINK SE NÃO TIVER ÁUDIO
+        if (musica.getArquivoAudio() == null || musica.getArquivoAudio().isEmpty()) {
+            holder.tvMusicaLInk.setVisibility(View.VISIBLE);
+            holder.tvMusicaLInk.setText(musica.getLinkYoutube());
+        } else {
+            holder.tvMusicaLInk.setVisibility(View.GONE);
+        }
+
         boolean isPlaying = (position == currentPlayingIndex);
 
         if (isPlaying) {
@@ -104,7 +112,7 @@ public class MusicaAdapter extends RecyclerView.Adapter<MusicaAdapter.MusicaView
 
     static class MusicaViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvNome, tvVersao;
+        TextView tvNome, tvVersao, tvMusicaLInk;
         ImageButton btnPlay;
 
         LinearLayout layoutEq;
@@ -116,6 +124,7 @@ public class MusicaAdapter extends RecyclerView.Adapter<MusicaAdapter.MusicaView
             super(itemView);
 
             tvNome   = itemView.findViewById(R.id.tvNome);
+            tvMusicaLInk   = itemView.findViewById(R.id.tvMusicaLink);
             tvVersao = itemView.findViewById(R.id.tvMusicaVersao);
             btnPlay  = itemView.findViewById(R.id.btnPlay);
 
