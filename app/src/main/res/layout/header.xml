@@ -39,7 +39,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:background="@android:color/transparent"
-        android:src="@android:drawable/ic_lock_power_off"
+        android:src="@drawable/ic_logout"
         android:contentDescription="Sair"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"

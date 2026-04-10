@@ -37,6 +37,8 @@ public class BaseActivity extends AppCompatActivity {
     protected ImageButton btnPrevFooter;
     protected ImageButton btnStopFooter;
 
+    protected ImageButton btnRepeatFooter;
+
     private SeekBar seekBarFooter;
     private final Handler seekHandler = new Handler();
 
@@ -195,6 +197,16 @@ public class BaseActivity extends AppCompatActivity {
                 @Override public void onStopTrackingTouch(SeekBar seekBar) {}
             });
         }
+
+        btnRepeatFooter = findViewById(R.id.btnRepeatFooter);
+        if (btnRepeatFooter != null) {
+            btnRepeatFooter.setOnClickListener(v -> {
+                if (musicService != null) {
+                    musicService.toggleRepeatMode();
+                    atualizarIconeRepeat();
+                }
+            });
+        }
     }
 
     private void logout() {
@@ -300,4 +312,19 @@ public class BaseActivity extends AppCompatActivity {
             seekHandler.postDelayed(this, 500);
         }
     };
+
+    protected void atualizarIconeRepeat() {
+        if (btnRepeatFooter == null || musicService == null) return;
+        int mode = musicService.getRepeatMode();
+        if (mode == Player.REPEAT_MODE_OFF) {
+            btnRepeatFooter.setAlpha(0.4f);
+            btnRepeatFooter.setImageResource(R.drawable.ic_repeat); // ícone normal
+        } else if (mode == Player.REPEAT_MODE_ONE) {
+            btnRepeatFooter.setAlpha(1f);
+            btnRepeatFooter.setImageResource(R.drawable.ic_repeat_one);
+        } else {
+            btnRepeatFooter.setAlpha(1f);
+            btnRepeatFooter.setImageResource(R.drawable.ic_repeat);
+        }
+    }
 }

@@ -210,4 +210,21 @@ public class MusicService extends Service {
             player.seekToDefaultPosition(index);
         }
     }
+
+    public void toggleRepeatMode() {
+        int current = player.getRepeatMode();
+        int next;
+        if (current == Player.REPEAT_MODE_OFF) {
+            next = Player.REPEAT_MODE_ONE;
+        } else if (current == Player.REPEAT_MODE_ONE) {
+            next = Player.REPEAT_MODE_ALL;
+        } else {
+            next = Player.REPEAT_MODE_OFF;
+        }
+        player.setRepeatMode(next);
+    }
+
+    public int getRepeatMode() {
+        return player != null ? player.getRepeatMode() : Player.REPEAT_MODE_OFF;
+    }
 }
