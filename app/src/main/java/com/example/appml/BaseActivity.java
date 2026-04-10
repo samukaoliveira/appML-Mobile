@@ -237,7 +237,13 @@ public class BaseActivity extends AppCompatActivity {
             isBound = true;
 
             musicService.addCallback(playerCallback);
-            runOnUiThread(() -> atualizarFooterGlobal());
+            runOnUiThread(() -> {
+                atualizarFooterGlobal();
+
+                // 🔥 GARANTE que o loop começa SEMPRE
+                seekHandler.removeCallbacks(updateSeekFooterRunnable);
+                seekHandler.post(updateSeekFooterRunnable);
+            });
         }
 
         @Override

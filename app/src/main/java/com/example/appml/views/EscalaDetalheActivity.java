@@ -1,11 +1,8 @@
 package com.example.appml.views;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,25 +42,12 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
     private TextView tvMusicasVazia;
     private MusicaAdapter musicaAdapter;
 
-    private SeekBar seekBar;
-    private final Handler handler = new Handler();
-    private TextView tvCurrentTime, tvTotalTime;
-    private ProgressBar progressLoading;
-
-    private ImageButton btnStopFooter;
-    private ImageButton btnPlayPause, btnNext, btnPrev;
-    private SeekBar seekBarFooter;
-    private ImageButton btnNextFooter, btnPrevFooter;
-
     private List<Musica> listaMusicas = new ArrayList<>();
-
-    // musicService e isBound herdados do BaseActivity
 
     private boolean playerReady = false;
     private int currentIndex = -1;
     private boolean playlistCarregada = false;
 
-    // ✅ Atualiza seekbar e highlight da lista — exclusivo desta Activity
     private final MusicService.PlayerCallback localCallback = new MusicService.PlayerCallback() {
 
         @Override
@@ -71,79 +55,30 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
             runOnUiThread(() -> {
                 currentIndex = index;
                 musicaAdapter.setCurrentPlayingIndex(index);
-                // tvFooterMusica e visibilidade do footer ficam com BaseActivity
             });
         }
 
         @Override
         public void onPlayStateChanged(boolean isPlaying) {
             runOnUiThread(() -> {
-                if (btnPlayPause != null) {
-                    btnPlayPause.setImageResource(
-                            isPlaying
-                                    ? android.R.drawable.ic_media_pause
-                                    : android.R.drawable.ic_media_play
-                    );
-                }
-
-                if (isPlaying) {
-                    handler.post(updateSeekRunnable);
-                } else {
-                    handler.removeCallbacks(updateSeekRunnable);
-
-                    // Se foi stop(), resetar estado local
-                    if (musicService != null) {
-                        Player player = musicService.getPlayer();
-                        if (player == null || player.getMediaItemCount() == 0) {
-                            playlistCarregada = false;
-                            currentIndex = -1;
-                            musicaAdapter.setCurrentPlayingIndex(-1);
-                            seekBar.setProgress(0);
-                            seekBarFooter.setProgress(0);
-                            tvCurrentTime.setText("00:00");
-                            tvTotalTime.setText("00:00");
-                        }
+                if (!isPlaying && musicService != null) {
+                    Player player = musicService.getPlayer();
+                    if (player == null || player.getMediaItemCount() == 0) {
+                        playlistCarregada = false;
+                        currentIndex = -1;
+                        musicaAdapter.setCurrentPlayingIndex(-1);
                     }
                 }
             });
         }
     };
 
-    private final Runnable updateSeekRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (musicService != null && playerReady) {
-                Player player = musicService.getPlayer();
-                if (player != null) {
-                    long pos = player.getCurrentPosition();
-                    long dur = player.getDuration();
-                    if (dur > 0) {
-                        tvCurrentTime.setText(formatTime((int) pos));
-                        int progress = (int) (pos * 100 / dur);
-                        seekBar.setProgress(progress);
-                        seekBarFooter.setProgress(progress);
-                    }
-                }
-            }
-            handler.postDelayed(this, 500);
-        }
-    };
-
     @Override
     protected void onStop() {
-        handler.removeCallbacks(updateSeekRunnable);
-
         if (musicService != null) {
             musicService.removeCallback(localCallback);
         }
-
-        super.onStop(); // BaseActivity remove o playerCallback global e faz unbind
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        handler.removeCallbacksAndMessages(null);
+        super.onStop();
     }
 
     @Override
@@ -188,23 +123,6 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
         rvMusicas = findViewById(R.id.rvMusicas);
         tvMusicasVazia = findViewById(R.id.tvMusicasVazia);
-
-        seekBar = findViewById(R.id.seekBar);
-        tvCurrentTime = findViewById(R.id.tvCurrentTime);
-        tvTotalTime = findViewById(R.id.tvTotalTime);
-        progressLoading = findViewById(R.id.progressLoading);
-
-        btnPlayPause = findViewById(R.id.btnPlayPause);
-        btnNext = findViewById(R.id.btnNext);
-        btnPrev = findViewById(R.id.btnPrev);
-
-        // layoutFooterNormal, layoutPlayerFooter, tvFooterMusica, btnPlayPauseFooter
-        // são inicializados pelo BaseActivity.setupFooterViews()
-
-        seekBarFooter = findViewById(R.id.seekBarFooter);
-        btnNextFooter = findViewById(R.id.btnNextFooter);
-        btnPrevFooter = findViewById(R.id.btnPrevFooter);
-        btnStopFooter = findViewById(R.id.btnStopFooter);
     }
 
     private void configurarRecyclerView() {
@@ -218,16 +136,12 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         HomeService.VoltaPraHome(btnHome, this);
     }
 
-    /**
-     * ✅ Chamado pelo BaseActivity após o bind — registra callback local e configura controles
-     */
     @Override
     protected void atualizarFooterGlobal() {
         super.atualizarFooterGlobal();
 
         if (musicService != null) {
             musicService.addCallback(localCallback);
-            configurarControlesPlayer();
             restaurarEstadoPlayer();
         }
     }
@@ -246,63 +160,7 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
                 currentIndex = index;
                 musicaAdapter.setCurrentPlayingIndex(index);
             }
-
-            long dur = player.getDuration();
-            if (dur > 0) tvTotalTime.setText(formatTime((int) dur));
-
-            if (player.isPlaying()) {
-                btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
-                handler.post(updateSeekRunnable);
-            }
         }
-    }
-
-    private void configurarControlesPlayer() {
-        playerReady = true;
-
-        Player player = musicService.getPlayer();
-        if (player == null) return;
-
-        player.addListener(new Player.Listener() {
-            @Override
-            public void onPlaybackStateChanged(int state) {
-                if (state == Player.STATE_BUFFERING) {
-                    progressLoading.setVisibility(View.VISIBLE);
-                } else if (state == Player.STATE_READY) {
-                    progressLoading.setVisibility(View.GONE);
-                    long dur = player.getDuration();
-                    if (dur > 0) tvTotalTime.setText(formatTime((int) dur));
-                }
-            }
-        });
-
-        btnPlayPause.setOnClickListener(v -> {
-            if (!playlistCarregada && !listaMusicas.isEmpty()) {
-                carregarETocarPlaylist(0);
-                return;
-            }
-            if (player.isPlaying()) {
-                musicService.pause();
-            } else {
-                musicService.play();
-            }
-        });
-
-        btnNext.setOnClickListener(v -> musicService.next());
-        btnPrev.setOnClickListener(v -> musicService.previous());
-
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    long dur = player.getDuration();
-                    if (dur > 0) player.seekTo((dur * progress) / 100);
-                }
-            }
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-
     }
 
     private void carregarETocarPlaylist(int startIndex) {
@@ -364,10 +222,6 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
                         tvMusicasVazia.setVisibility(View.GONE);
                         rvMusicas.setVisibility(View.VISIBLE);
                         musicaAdapter.setMusicas(listaMusicas);
-
-                        if (!existeAlgumAudio()) {
-                            desativarPlayer();
-                        }
                     }
                 }
             }
@@ -379,28 +233,9 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         });
     }
 
-    private boolean existeAlgumAudio() {
-        if (listaMusicas == null) return false;
-        for (Musica m : listaMusicas) {
-            if (m.getArquivoAudio() != null && !m.getArquivoAudio().isEmpty()) return true;
-        }
-        return false;
-    }
-
-    private void desativarPlayer() {
-        btnPlayPause.setEnabled(false);
-        btnNext.setEnabled(false);
-        btnPrev.setEnabled(false);
-        seekBar.setEnabled(false);
-        btnPlayPause.setAlpha(0.3f);
-        btnNext.setAlpha(0.3f);
-        btnPrev.setAlpha(0.3f);
-        seekBar.setAlpha(0.3f);
-    }
-
     @Override
     public void onPlayClicked(Musica musica, int position) {
-        if (!playerReady || musicService == null) return;
+        if (musicService == null) return;
 
         if (musica.getArquivoAudio() == null || musica.getArquivoAudio().isEmpty()) {
             Toast.makeText(this, "Essa música não possui áudio", Toast.LENGTH_SHORT).show();
@@ -414,6 +249,7 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
             musicService.play();
         }
 
+        playerReady = true;
         currentIndex = position;
         musicaAdapter.setCurrentPlayingIndex(position);
     }
@@ -428,10 +264,5 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
     private String displayValor(String valor) {
         return (valor == null || valor.trim().isEmpty()) ? "---" : valor;
-    }
-
-    private String formatTime(int millis) {
-        int totalSeconds = millis / 1000;
-        return String.format("%02d:%02d", totalSeconds / 60, totalSeconds % 60);
     }
 }
