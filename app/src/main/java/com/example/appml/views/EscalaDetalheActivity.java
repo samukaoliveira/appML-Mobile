@@ -3,6 +3,7 @@ package com.example.appml.views;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -66,14 +67,16 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
     private int currentIndex = -1;
     private boolean playlistCarregada = false;
 
-    // 🔁 Atualiza barra
-    private Runnable updateSeekRunnable = new Runnable() {
+    // 🔁 Atualiza barra (SAFE)
+    private final Runnable updateSeekRunnable = new Runnable() {
         @Override
         public void run() {
-            if (musicService != null) {
+            if (musicService != null && playerReady) {
+
                 Player player = musicService.getPlayer();
 
                 if (player != null && player.isPlaying()) {
+
                     long pos = player.getCurrentPosition();
                     long dur = player.getDuration();
 
@@ -90,10 +93,12 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
     // 🔌 conexão com service
     private final ServiceConnection connection = new ServiceConnection() {
+
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
             musicService = binder.getService();
+
             isBound = true;
             playerReady = true;
 
@@ -103,22 +108,42 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         @Override
         public void onServiceDisconnected(ComponentName name) {
             isBound = false;
+            playerReady = false;
         }
     };
 
     @Override
     protected void onStart() {
         super.onStart();
-        bindService(new Intent(this, MusicService.class), connection, BIND_AUTO_CREATE);
+
+        Intent intent = new Intent(this, MusicService.class);
+
+        // 🔥 MUITO IMPORTANTE (corrige travamento)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
+
+        bindService(intent, connection, BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+
+        handler.removeCallbacks(updateSeekRunnable);
+
         if (isBound) {
             unbindService(connection);
             isBound = false;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -131,6 +156,7 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
         configurarHomeButton();
 
         int escalaId = getIntent().getIntExtra("escala_id", -1);
+
         if (escalaId == -1) {
             Toast.makeText(this, "Escala inválida", Toast.LENGTH_SHORT).show();
             finish();
@@ -141,6 +167,7 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
     }
 
     private void inicializarComponentes() {
+
         tvNome = findViewById(R.id.tvNome);
         tvData = findViewById(R.id.tvData);
         tvHora = findViewById(R.id.tvHora);
@@ -187,15 +214,16 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
     private void configurarPlayer() {
 
-        musicService.getPlayer().addListener(new Player.Listener() {
+        Player player = musicService.getPlayer();
+
+        if (player == null) return;
+
+        player.addListener(new Player.Listener() {
 
             @Override
             public void onMediaItemTransition(MediaItem mediaItem, int reason) {
-                currentIndex = musicService.getPlayer().getCurrentMediaItemIndex();
-
-                if (currentIndex >= 0) {
-                    musicaAdapter.setCurrentPlayingIndex(currentIndex);
-                }
+                currentIndex = player.getCurrentMediaItemIndex();
+                musicaAdapter.setCurrentPlayingIndex(currentIndex);
             }
 
             @Override
@@ -211,12 +239,18 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
 
             @Override
             public void onPlaybackStateChanged(int state) {
+
                 if (state == Player.STATE_BUFFERING) {
                     progressLoading.setVisibility(View.VISIBLE);
-                } else if (state == Player.STATE_READY) {
+                }
+
+                if (state == Player.STATE_READY) {
                     progressLoading.setVisibility(View.GONE);
-                    long dur = musicService.getPlayer().getDuration();
-                    tvTotalTime.setText(formatTime((int) dur));
+
+                    long dur = player.getDuration();
+                    if (dur > 0) {
+                        tvTotalTime.setText(formatTime((int) dur));
+                    }
                 }
             }
         });
@@ -226,39 +260,41 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
             if (!playlistCarregada && !listaMusicas.isEmpty()) {
 
                 List<MediaItem> items = new ArrayList<>();
+
                 for (Musica m : listaMusicas) {
                     items.add(MediaItem.fromUri(m.getArquivoAudio()));
                 }
 
                 musicService.playPlaylist(items, 0);
+
                 playlistCarregada = true;
                 currentIndex = 0;
-
                 musicaAdapter.setCurrentPlayingIndex(0);
+
                 return;
             }
 
-            if (musicService.getPlayer().isPlaying()) {
+            if (player.isPlaying()) {
                 musicService.pause();
             } else {
                 musicService.play();
             }
         });
 
-        btnNext.setOnClickListener(v -> {
-            musicService.next();
-        });
-
-        btnPrev.setOnClickListener(v -> {
-            musicService.previous();
-        });
+        btnNext.setOnClickListener(v -> musicService.next());
+        btnPrev.setOnClickListener(v -> musicService.previous());
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
                 if (fromUser) {
-                    long dur = musicService.getPlayer().getDuration();
-                    musicService.getPlayer().seekTo((dur * progress) / 100);
+                    long dur = player.getDuration();
+
+                    if (dur > 0) {
+                        player.seekTo((dur * progress) / 100);
+                    }
                 }
             }
 
@@ -268,11 +304,14 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
     }
 
     private void carregarDetalheEscala(int id) {
+
         ApiService apiService = RetrofitInstance.getRetrofitInstance(this).create(ApiService.class);
 
         apiService.getDetalheEscala(id).enqueue(new Callback<EscalaDetalhada>() {
+
             @Override
             public void onResponse(Call<EscalaDetalhada> call, Response<EscalaDetalhada> response) {
+
                 if (response.isSuccessful() && response.body() != null) {
 
                     EscalaDetalhada escala = response.body();
@@ -308,7 +347,6 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
                         rvMusicas.setVisibility(View.VISIBLE);
                         musicaAdapter.setMusicas(listaMusicas);
                     }
-
                 }
             }
 
@@ -322,11 +360,12 @@ public class EscalaDetalheActivity extends BaseActivity implements MusicaAdapter
     @Override
     public void onPlayClicked(Musica musica, int position) {
 
-        if (!playerReady) return;
+        if (!playerReady || musicService == null) return;
 
         if (!playlistCarregada) {
 
             List<MediaItem> items = new ArrayList<>();
+
             for (Musica m : listaMusicas) {
                 items.add(MediaItem.fromUri(m.getArquivoAudio()));
             }

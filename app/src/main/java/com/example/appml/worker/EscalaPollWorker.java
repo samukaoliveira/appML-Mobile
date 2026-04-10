@@ -34,7 +34,7 @@ public class EscalaPollWorker extends Worker {
         super(ctx, params);
     }
 
-    private static final String CHANNEL_ID = "escala_updates";
+    public static final String CHANNEL_ID = "escala_updates";
 
     private void criarCanalSeNecessario(Context ctx) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
