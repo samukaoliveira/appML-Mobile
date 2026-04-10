@@ -11,8 +11,10 @@ import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MusicService extends Service {
@@ -20,8 +22,40 @@ public class MusicService extends Service {
     private static final String CHANNEL_ID = "music_channel";
 
     private ExoPlayer player;
+    private String nomeMusicaAtual;
+    private Player.Listener playerListener;
+    private List<String> nomesPlaylist = new ArrayList<>();
 
-    // ✅ BINDER ADICIONADO
+    // ✅ Lista de callbacks — suporta múltiplos observadores
+    private final List<PlayerCallback> callbacks = new ArrayList<>();
+
+    public interface PlayerCallback {
+        void onMusicChanged(String nome, int index);
+        void onPlayStateChanged(boolean isPlaying);
+    }
+
+    public void addCallback(PlayerCallback cb) {
+        if (cb != null && !callbacks.contains(cb)) {
+            callbacks.add(cb);
+        }
+    }
+
+    public void removeCallback(PlayerCallback cb) {
+        callbacks.remove(cb);
+    }
+
+    private void notifyMusicChanged(String nome, int index) {
+        for (PlayerCallback cb : new ArrayList<>(callbacks)) {
+            cb.onMusicChanged(nome, index);
+        }
+    }
+
+    private void notifyPlayStateChanged(boolean isPlaying) {
+        for (PlayerCallback cb : new ArrayList<>(callbacks)) {
+            cb.onPlayStateChanged(isPlaying);
+        }
+    }
+
     private final IBinder binder = new LocalBinder();
 
     public class LocalBinder extends Binder {
@@ -35,6 +69,27 @@ public class MusicService extends Service {
         super.onCreate();
 
         player = new ExoPlayer.Builder(this).build();
+
+        playerListener = new Player.Listener() {
+
+            @Override
+            public void onMediaItemTransition(MediaItem mediaItem, int reason) {
+                int index = player.getCurrentMediaItemIndex();
+
+                if (nomesPlaylist != null && index >= 0 && index < nomesPlaylist.size()) {
+                    nomeMusicaAtual = nomesPlaylist.get(index);
+                }
+
+                notifyMusicChanged(nomeMusicaAtual, index);
+            }
+
+            @Override
+            public void onIsPlayingChanged(boolean isPlaying) {
+                notifyPlayStateChanged(isPlaying);
+            }
+        };
+
+        player.addListener(playerListener);
 
         createNotificationChannel();
         startForegroundSafe();
@@ -52,23 +107,19 @@ public class MusicService extends Service {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
                     "Music Playback",
                     NotificationManager.IMPORTANCE_LOW
             );
-
             NotificationManager manager =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
             if (manager != null) {
                 manager.createNotificationChannel(channel);
             }
         }
     }
 
-    // ✅ ISSO É O QUE A ACTIVITY PRECISA
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
@@ -78,10 +129,20 @@ public class MusicService extends Service {
         return player;
     }
 
-    public void playPlaylist(List<MediaItem> items, int index) {
+    public void playPlaylist(List<MediaItem> items, List<String> nomes, int index) {
+        nomesPlaylist.clear();
+        nomesPlaylist.addAll(nomes);
+
         player.setMediaItems(items, index, 0);
         player.prepare();
         player.play();
+
+        if (index >= 0 && index < nomesPlaylist.size()) {
+            nomeMusicaAtual = nomesPlaylist.get(index);
+        }
+
+        notifyMusicChanged(nomeMusicaAtual, index);
+        notifyPlayStateChanged(true);
     }
 
     public void play() {
@@ -100,9 +161,53 @@ public class MusicService extends Service {
         player.seekToPrevious();
     }
 
+    public void stop() {
+        if (player != null) {
+            player.stop();
+            player.clearMediaItems(); // ✅ limpar itens sinaliza que foi stop, não pause
+        }
+        nomesPlaylist.clear();
+        nomeMusicaAtual = null;
+        notifyPlayStateChanged(false);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        player.release();
+        if (player != null) {
+            player.removeListener(playerListener);
+            player.release();
+        }
+    }
+
+    public String getNomeMusicaAtual() {
+        return nomeMusicaAtual;
+    }
+
+    public void setNomeMusicaAtual(String nome) {
+        this.nomeMusicaAtual = nome;
+        notifyMusicChanged(nome, player.getCurrentMediaItemIndex());
+    }
+
+    public boolean isPlaying() {
+        return player != null && player.isPlaying();
+    }
+
+    public long getCurrentPosition() {
+        return player != null ? player.getCurrentPosition() : 0;
+    }
+
+    public long getDuration() {
+        return player != null ? player.getDuration() : 0;
+    }
+
+    public void seekTo(long pos) {
+        if (player != null) player.seekTo(pos);
+    }
+
+    public void seekToDefaultPosition(int index) {
+        if (player != null) {
+            player.seekToDefaultPosition(index);
+        }
     }
 }
